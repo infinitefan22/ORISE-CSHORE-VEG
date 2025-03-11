@@ -13,7 +13,7 @@ icorrect =1;
 Dtrunk = 0.1143 ; Droot = 0.0286 ; Daverage = 0.038 ;%both in meters, diameter of trunk and roots of model from Kelty full paper, average is ave of effective diameters p52
 fluiddensity = 1000 ; fluidviscosity = .001 ; %kg/m3, kg/ms
 offset = [3.0 3.9 2.8 3.5 3.8 3.8 ]; %this line is why j can only go to 6
-B = 3.66;L = 18; %width and length of flume
+BWidth = 3.66;Length = 18; %width and length of flume
 %% accessing files
 % basenameog = {'HighDensity_h270_hv182_NoWall' ,'HighDensity_h270_hv182_Wall'} ; % original basename
 basename = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/SummaryFiles/' ; 
@@ -111,9 +111,9 @@ for j = 1:length(dnames)
       if contains(dnames(j).name,'Base')
           N = 0;
       elseif contains(dnames(j).name,'High') 
-          N= 50*8/(L*B); %number of plants ( and roots) per unit area
+          N= 50*8/(Length*BWidth); %number of plants ( and roots) per unit area
       elseif contains(dnames(j).name, 'Low')
-          N = 25*8/(L*B) ; %number of plants (and roots) per unit area / CLARA *8 assumed from the high density calc
+          N = 25*8/(Length*BWidth) ; %number of plants (and roots) per unit area / CLARA *8 assumed from the high density calc
       end
       [j1, j2] = min(abs(xi-43));
       
@@ -121,12 +121,13 @@ for j = 1:length(dnames)
       % get exact value of Cd
       F2overCd = N*1000/2*De*(hv+eta_p(:,3)).*udum.*abs(udum);% uses p(3) for eta
       dissvegoverCd2 = mean(-F2overCd.*udum);
-      Cdexact2 =((9810*n*c/8)*(Hrmsi(end)^2-Hrmsi(1)^2) - dissb*L)/(dissvegoverCd2*L); 
+      Cdexact2 =((9810*n*c/8)*(Hrmsi(end)^2-Hrmsi(1)^2) - dissb*Length)/(dissvegoverCd2*Length); 
       if N==0;Cdexact = 1;Cdexact2 = 1;end
       %Cd = Cdexact;
       F2 = N*1000*Cdexact2/2*De*(hv+eta_p(:,3)).*udum.*abs(udum); %fluid force on vegetation
       d = -(abs(F2).*abs(udum)); %total time averaged force and dissipation
       dissveg2 = -mean(abs(F2).*abs(udum));
+      Lwavelength = 2*pi / k ; 
       
       modelEf(1) = (9810*n*c/8)*Hrmsi(1)^2;
       modelHrms(1) = sqrt(8*modelEf(1)/(9810*n*c)); 
@@ -164,8 +165,8 @@ for j = 1:length(dnames)
         eta0b(ii)= eta0b(ii-1)  - (dx/(9810*hv))*(ddxSxx(ii)+mean(taub)+0*mean(F2)); 
       end
 % Kelty Cd Calculation (written by Clara)
-    
-
+    Atm = Daverage ; %average projected area per height per tree (so i am using the weighted average diameter
+    alphafract1 = (Atm*N*Hrmsi)
 % Re Calculations
     Re = fluiddensity*mean(abs(udum))*Daverage/fluidviscosity ; 
 % KC Calculations
@@ -173,30 +174,32 @@ for j = 1:length(dnames)
    KC = mean(abs(udum)) * waveperiod / Daverage ; 
 
 % saving the data into a structure array
-      aalldata = structure_variables(aalldata, categoryname, 'xi', xi) ;
-      aalldata = structure_variables(aalldata, categoryname, 'xwg', xwg) ; 
-      aalldata = structure_variables(aalldata, categoryname, 'xp', xp) ;
-      aalldata = structure_variables(aalldata, categoryname, 'Hrmsi', Hrmsi) ; 
-      aalldata = structure_variables(aalldata, categoryname, 'modelHrms', modelHrms) ;
-      aalldata = structure_variables(aalldata, categoryname, 'datHrms', datHrms) ; 
-      aalldata = structure_variables(aalldata, categoryname, 'p', p) ;
-      aalldata = structure_variables(aalldata, categoryname, 'p_init', p_init) ; 
-      aalldata = structure_variables(aalldata, categoryname, 'eta', eta) ;
-      aalldata = structure_variables(aalldata, categoryname, 'eta_p', eta_p) ;
-      aalldata = structure_variables(aalldata, categoryname, 'eta_init', eta_init) ;
-      aalldata = structure_variables(aalldata, categoryname, 'modeleta', modeleta) ; 
-      aalldata = structure_variables(aalldata, categoryname, 'dateta', dateta) ;
-      aalldata = structure_variables(aalldata, categoryname, 'eta0a', eta0a) ; 
-      aalldata = structure_variables(aalldata, categoryname, 't', t) ;
-      aalldata = structure_variables(aalldata, categoryname, 'udum', udum) ;
-      aalldata = structure_variables(aalldata, categoryname, 'Re', Re) ;
-      aalldata = structure_variables(aalldata, categoryname, 'KC', KC) ;
-      aalldata = structure_variables(aalldata, categoryname, 'F2overCd', F2overCd) ;
       aalldata = structure_variables(aalldata, categoryname, 'Cdexact2', Cdexact2) ;
       aalldata = structure_variables(aalldata, categoryname, 'datEf', datEf) ;
+      aalldata = structure_variables(aalldata, categoryname, 'dateta', dateta) ;
+      aalldata = structure_variables(aalldata, categoryname, 'datHrms', datHrms) ; 
+      aalldata = structure_variables(aalldata, categoryname, 'eta', eta) ;
+      aalldata = structure_variables(aalldata, categoryname, 'eta0a', eta0a) ; 
       aalldata = structure_variables(aalldata, categoryname, 'eta0b', eta0b) ;
+      aalldata = structure_variables(aalldata, categoryname, 'eta_init', eta_init) ;
+      aalldata = structure_variables(aalldata, categoryname, 'eta_p', eta_p) ;
       aalldata = structure_variables(aalldata, categoryname, 'F2', F2) ;
+      aalldata = structure_variables(aalldata, categoryname, 'F2overCd', F2overCd) ;
+      aalldata = structure_variables(aalldata, categoryname, 'Hrmsi', Hrmsi) ; 
+      aalldata = structure_variables(aalldata, categoryname, 'KC', KC) ;
+      aalldata = structure_variables(aalldata, categoryname, 'modelHrms', modelHrms) ;
+      aalldata = structure_variables(aalldata, categoryname, 'modeleta', modeleta) ;
+      aalldata = structure_variables(aalldata, categoryname, 'p', p) ;
+      aalldata = structure_variables(aalldata, categoryname, 'p_init', p_init) ; 
+      aalldata = structure_variables(aalldata, categoryname, 'Re', Re) ;
+      aalldata = structure_variables(aalldata, categoryname, 'sav', sav) ;
+      aalldata = structure_variables(aalldata, categoryname, 't', t) ;
+      aalldata = structure_variables(aalldata, categoryname, 'udum', udum) ;
       aalldata = structure_variables(aalldata, categoryname, 'waveperiod', waveperiod) ;
+      aalldata = structure_variables(aalldata, categoryname, 'xi', xi) ;
+      aalldata = structure_variables(aalldata, categoryname, 'xp', xp) ;
+      aalldata = structure_variables(aalldata, categoryname, 'xwg', xwg) ; 
+      
     
     else 
         disp("Trial " +dnames(j).name+ " has been skipped")
