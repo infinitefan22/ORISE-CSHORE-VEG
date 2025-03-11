@@ -3,12 +3,14 @@
 plottingfig1 = 1 ;
 plottingfig2 = 0 ; 
 % set(0, 'DefaultAxesFontName', 'Nimbus Roman', 'DefaultTextFontName', 'Nimbus Roman')
-% set(0,'defaultTextInterpreter','latex')
+ set(0,'defaultTextInterpreter','latex')
+ set(groot,'defaultAxesTickLabelInterpreter','latex') 
+ set(groot, 'defaultLegendInterpreter','latex')
 %% Setting Constants and Loading Data 
 CNT = 1 ; 
 load('aalldata_Mar062025DELETE.mat') ;
 
-offset = [3.0 3.9 2.8 3.5 3.8 3.8 ]; %this line is why j can only go to 6
+offset = [3.0 3.9 2.8 3.5 3.8 3.8 ]; 
 
 %% variables (within aalldata)
 categoryname = 'HighDensity_h270_hv182_NoWall' ;
@@ -47,7 +49,7 @@ numofTrials = length(xi) ;
 
 for num = 1:length(xi)
     %%
-    trialnum = num ; titlename = join([strrep(categoryname, '_', '-'), ' Trial ', string(trialnum), ' H_r_m_s=', sprintf('%2.2f',Hrmsi{num}(1))], "") ;
+    trialnum = num ; titlename = join([strrep(categoryname, '_', '-'), ' Trial ', string(trialnum), ' $H_r_m_s$=', sprintf('%2.2f',Hrmsi{num}(1))], "") ;
     [j1, j2] = min(abs(xi{num}-43));
     j = num ; 
 
@@ -64,12 +66,12 @@ for num = 1:length(xi)
          title(titlename);
 %          title(categoryname+'_Trial '+string(trialnum),' ',sprintf('%2.2f',Hrmsi{num}(1)),'interpreter','latex','fontsize',12) ; %,' ',sprintf('%2.2f',stats.Tp)]
         %xlabel('$x[m]$','interpreter','latex','fontsize',16)
-         ylabel('$H_{rms}[m]$','interpreter','latex','fontsize',16)
+         ylabel('$H_{rms}[m]$','fontsize',16)
          a = axis;
          axis manual
          hf=fill([36 54 54 36],[a(3) a(3) a(4) a(4)],[.2 .5 .2]);set(hf,'facealpha',.2) ;
-         text(37,a(3)+.1*(a(4)-a(3)),'Veg. Section','interpreter','latex','fontsize',14) ;
-         text(15,a(3)+.1*(a(4)-a(3)),['$C_d = ',sprintf('%2.2f',Cdexact2{num}),'$'],'interpreter','latex','fontsize',14) ;
+         text(37,a(3)+.1*(a(4)-a(3)),'Veg. Section','fontsize',14) ;
+         text(15,a(3)+.1*(a(4)-a(3)),['$C_d = ',sprintf('%2.2f',Cdexact2{num}),'$'],'fontsize',14) ;
     
           subplot(2,1,2);
           plot(xp{num}(1:6),1000*(mean(p{num}(:,1:6))-p_init{num}(1:6))/9810,'bs-','markerfacecolor','b');hold on
@@ -83,7 +85,7 @@ for num = 1:length(xi)
           %plot(xi,1000*etaiwavesbotshearwrs,'m--','linewidth',2);
           %plot(xi,1000*etaiwavesbotshearveg2p,'m-','linewidth',2);
           %hh(2) = plot(xi,1000*etaiwavesbotshearveg2,'k-','linewidth',3);
-          legend(hh,'Modeled  \eta, u ','Measured \eta, u','{\bf F}= 0','AutoUpdate','off');
+          legend(hh,'Modeled  $\eta$, $u$ ','Measured $\eta, u$','{\bf F}= 0','AutoUpdate','off');
 %           hl = legend(hh,'Modeled $ \eta, u $','Measued $\eta, u $','${\bf F}= 0$','AutoUpdate','off');
           %hl = legend(hh,'$S_{xx}, \tau_b$','$S_{xx}, \tau_b, {\bf F}$','AutoUpdate','off');
 %           set(hl,'interpreter','latex','fontsize',14,'location','northwest')
@@ -91,9 +93,9 @@ for num = 1:length(xi)
           if dumyl(2)-dumyl(1)<100
             ylim([mean(ylim)-40 mean(ylim)+40])
           end
-          xlabel('$x[m]$','interpreter','latex','fontsize',16)
-          ylabel('$\overline{\eta}[mm]$','interpreter','latex','fontsize',14)
-          set(gca,'TickLabelInterpreter','latex') ;
+          xlabel('$x[m]$','fontsize',16)
+          ylabel('$\overline{\eta}[mm]$','fontsize',14)
+          
 
 %       dname2=categoryname;dname2(categoryname=='_'|categoryname=='/')='-';
 %     %   print('-dpng',[dname2(21:end-1),'.png']) 
