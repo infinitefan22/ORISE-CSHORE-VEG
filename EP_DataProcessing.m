@@ -7,6 +7,7 @@ plottingog = 0 ; plottingyn = 0 ; plottingpost = 0 ; %1 means plots, 0 means no 
 cnt = 0; %figure numbers
 addpath('./ClaraFunctions') ; 
 addpath('./data') ; 
+addpath('./mfiles') ; 
 %% constants
 cf = .05;
 icorrect =1;
@@ -25,6 +26,20 @@ dnames = dir([basename, '*Summary.mat']) ;
 summaryfiles = organize_files(dnames, '^(HighDensity|LowDensity|Baseline)_[\w]+_[\w]+(_\w+)*(?=_Trial)') ; 
 sumcategories = fieldnames(summaryfiles) ;
 exceltable = readtable('Experimental_Info.xlsx') ;
+exceltable.TrialName = strings(height(exceltable),1) ; 
+for i = 1:height(exceltable)
+    trialnum = exceltable.Trial(i) ; 
+    if isnan(trialnum)
+        exceltable.TrialName(i) = "" ;
+    else 
+        if exceltable.Trial(i) < 10
+            exceltable.TrialName(i) = join([exceltable.ExperimentFileName{i},'_Trial0',string(trialnum),'_Summary.mat'], '') ; 
+        else 
+            exceltable.TrialName(i) = join([exceltable.ExperimentFileName{i},'_Trial',string(trialnum),'_Summary.mat'], '') ; 
+        end
+    end
+end
+        
 aalldata = struct() ; 
 skippedtrials = {} ; 
 %% data processing
@@ -34,7 +49,8 @@ for j = 1:length(dnames)
   offset = [offset, zeros(1, length(dnames) - length(offset))] ; % making offset the same length as dnames
   clear p u eta eta_p ubp wbp categoryname
 
-    dname = [basename,dnames(j).name,'/'] ; 
+    dname = [basename,dnames(j).name,'/'] ;
+    file = dnames(j).name ; %summary mat file name
     load([basename, dnames(j).name])
     categoryname = string(regexp(dnames(j).name,  '^(HighDensity|LowDensity|Baseline)_[\w]+_[\w]+(_\w+)*(?=_Trial)', 'match')) ; 
   
@@ -80,7 +96,7 @@ for j = 1:length(dnames)
         end
       end
       dx = .1;
-      xi = dat.press(1).x:dx:dat.press(6).x;
+      xi = dat.press(1).x:dx:dat.press(6).x; 
       Hrmsi = interp1(xwg,sqrt(8)*std(eta),xi);
       %Hrmsi = interp1(xp,sqrt(8)*std(eta_p),xi);
       [Sxy, Sxx, Syy] = radstress (Hrmsi, 0*ones(size(xi)), n*ones(size(xi)), c*ones(size(xi)));
@@ -165,8 +181,28 @@ for j = 1:length(dnames)
         eta0b(ii)= eta0b(ii-1)  - (dx/(9810*hv))*(ddxSxx(ii)+mean(taub)+0*mean(F2)); 
       end
 % Kelty Cd Calculation (written by Clara)
+    rownum = find(strcmp(exceltable.TrialName, file),1) ; 
+    wavetype = exceltable.WaveType{rownum} ;
+    alpha = exceltable.waveHeightDecayCoefficient(rownum) ; 
     Atm = Daverage ; %average projected area per height per tree (so i am using the weighted average diameter
-    alphafract1 = (Atm*N*Hrmsi)
+    vegweth = hv ; %mean wetted height of vegetation (d)
+    avewatd = hv ; %mean water depth at vegetation (h)
+    Hi = 1.4*Hrmsi(1) ; %calculating incident wave height
+    if contains(file, 'HighDensity') || contains(file, 'LowDensity')
+        if strcmp(wavetype, 'Regular')
+            denominator = 9*pi*(sinh(k*avewatd)*(sinh(2*k*avewatd)+2*k*avewatd)) ; 
+            numerator = 4*Atm*N*Hi*k*((sinh(k*vegweth)^3)+3*sinh(k*vegweth)) ;
+            CdKelty = alpha * denominator / numerator ; 
+        elseif strcmp(wavetype, 'Random')
+            denominator = 3*sqrt(pi)*(sinh(k*avewatd)*(sinh(2*k*avewatd)+2*k*avewatd)) ; 
+            numerator = 4*Atm*N*Hrmsi(1)*k*((sinh(k*vegweth)^3)+3*sinh(k*vegweth)) ;
+            CdKelty = alpha * denominator / numerator ;
+        else 
+            disp('Kelty Cd not calculated. Wave type not specified') ; end
+    else 
+        CdKelty = 0 ; 
+        alpha = 0 ; end
+
 % Re Calculations
     Re = fluiddensity*mean(abs(udum))*Daverage/fluidviscosity ; 
 % KC Calculations
@@ -174,7 +210,9 @@ for j = 1:length(dnames)
    KC = mean(abs(udum)) * waveperiod / Daverage ; 
 
 % saving the data into a structure array
+      aalldata = structure_variables(aalldata, categoryname, 'alpha', alpha) ;
       aalldata = structure_variables(aalldata, categoryname, 'Cdexact2', Cdexact2) ;
+      aalldata = structure_variables(aalldata, categoryname, 'CdKelty', CdKelty) ;
       aalldata = structure_variables(aalldata, categoryname, 'datEf', datEf) ;
       aalldata = structure_variables(aalldata, categoryname, 'dateta', dateta) ;
       aalldata = structure_variables(aalldata, categoryname, 'datHrms', datHrms) ; 
@@ -195,12 +233,12 @@ for j = 1:length(dnames)
       aalldata = structure_variables(aalldata, categoryname, 'sav', sav) ;
       aalldata = structure_variables(aalldata, categoryname, 't', t) ;
       aalldata = structure_variables(aalldata, categoryname, 'udum', udum) ;
+      aalldata = structure_variables(aalldata, categoryname, 'wavetype', wavetype) ;
       aalldata = structure_variables(aalldata, categoryname, 'waveperiod', waveperiod) ;
       aalldata = structure_variables(aalldata, categoryname, 'xi', xi) ;
       aalldata = structure_variables(aalldata, categoryname, 'xp', xp) ;
       aalldata = structure_variables(aalldata, categoryname, 'xwg', xwg) ; 
       
-    
     else 
         disp("Trial " +dnames(j).name+ " has been skipped")
         if ~isempty(skippedtrials)
@@ -212,4 +250,4 @@ for j = 1:length(dnames)
 end %CLARA
 
 %%
- save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_Mar062025DELETE.mat'], 'aalldata') ; 
+%  save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_Mar062025DELETE.mat'], 'aalldata') ; 
