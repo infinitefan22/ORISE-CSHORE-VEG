@@ -212,6 +212,7 @@ for j = 1:length(dnames)
 % saving the data into a structure array
       aalldata = structure_variables(aalldata, categoryname, 'alpha', alpha) ;
       aalldata = structure_variables(aalldata, categoryname, 'Cdexact2', Cdexact2) ;
+      aalldata = structure_variables(aalldata, categoryname, 'd', d) ;
       aalldata = structure_variables(aalldata, categoryname, 'CdKelty', CdKelty) ;
       aalldata = structure_variables(aalldata, categoryname, 'datEf', datEf) ;
       aalldata = structure_variables(aalldata, categoryname, 'dateta', dateta) ;
@@ -224,6 +225,7 @@ for j = 1:length(dnames)
       aalldata = structure_variables(aalldata, categoryname, 'F2', F2) ;
       aalldata = structure_variables(aalldata, categoryname, 'F2overCd', F2overCd) ;
       aalldata = structure_variables(aalldata, categoryname, 'Hrmsi', Hrmsi) ; 
+      aalldata = structure_variables(aalldata, categoryname, 'hv', hv) ;
       aalldata = structure_variables(aalldata, categoryname, 'KC', KC) ;
       aalldata = structure_variables(aalldata, categoryname, 'modelHrms', modelHrms) ;
       aalldata = structure_variables(aalldata, categoryname, 'modeleta', modeleta) ;
@@ -231,6 +233,7 @@ for j = 1:length(dnames)
       aalldata = structure_variables(aalldata, categoryname, 'p_init', p_init) ; 
       aalldata = structure_variables(aalldata, categoryname, 'Re', Re) ;
       aalldata = structure_variables(aalldata, categoryname, 'sav', sav) ;
+      aalldata = structure_variables(aalldata, categoryname, 'stats', stats) ;
       aalldata = structure_variables(aalldata, categoryname, 't', t) ;
       aalldata = structure_variables(aalldata, categoryname, 'udum', udum) ;
       aalldata = structure_variables(aalldata, categoryname, 'wavetype', wavetype) ;
@@ -250,4 +253,4 @@ for j = 1:length(dnames)
 end %CLARA
 
 %%
-%  save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_Mar062025DELETE.mat'], 'aalldata') ; 
+%  save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_Mar182025.mat'], 'aalldata') ; 

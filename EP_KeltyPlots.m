@@ -1,20 +1,24 @@
- clear ; clc ; close all
+clear ; clc ; close all
+addpath('./ClaraFunctions') ; 
+addpath('./data') ; 
+addpath('./mfiles') ; 
  %% Design elements and ease of use
 plottingfig1 = 1 ;
-plottingfig2 = 0 ; 
+plottingfig2 = 1 ; 
 % set(0, 'DefaultAxesFontName', 'Nimbus Roman', 'DefaultTextFontName', 'Nimbus Roman')
  set(0,'defaultTextInterpreter','latex')
  set(groot,'defaultAxesTickLabelInterpreter','latex') 
  set(groot, 'defaultLegendInterpreter','latex')
 %% Setting Constants and Loading Data 
 CNT = 1 ; 
-load('aalldata_Mar062025DELETE.mat') ;
-
+% load('aalldata_Mar062025DELETE.mat') ;
+load('aalldata_Mar182025.mat') ;
 offset = [3.0 3.9 2.8 3.5 3.8 3.8 ]; 
 
 %% variables (within aalldata)
 categoryname = 'HighDensity_h270_hv182_NoWall' ;
    Cdexact2 = aalldata.(categoryname).Cdexact2 ; 
+   d = aalldata.(categoryname).d ; 
    datEf = aalldata.(categoryname).datEf ; 
    dateta = aalldata.(categoryname).dateta ;
    datHrms = aalldata.(categoryname).datHrms ; 
@@ -32,6 +36,7 @@ categoryname = 'HighDensity_h270_hv182_NoWall' ;
    p = aalldata.(categoryname).p ; 
    p_init = aalldata.(categoryname).p_init ; 
    Re = aalldata.(categoryname).Re ; 
+   sav = aalldata.(categoryname).sav ; 
    t = aalldata.(categoryname).t ; 
    udum = aalldata.(categoryname).udum ; 
    waveperiod = aalldata.(categoryname).waveperiod ; 
@@ -104,26 +109,29 @@ for num = 1:length(xi)
 %     %   a = axis;
 %     %   hf=fill([36 54 54 36],[a(3) a(3) a(4) a(4)],[.2 .5 .2]);set(hf,'facealpha',.2)
     %   axis(a)
+%     saveas(gcf, ['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_KeltyPlotsMar132025/', join([file,'_WaveVeg.fig'],'')])
     end
-
+%%
 if plottingfig2 ==1
+    %%
   figure(CNT);clf
       CNT=CNT+1 ; % CLARA
       subplot(3,1,1)
-      plot(t,udum,'r','linewidth',2);hold all
-        plot(t,0*udum,'k','linewidth',1);hold all
-      plot(sav(j2).t+offset(j),mean(sav(j2).u),'b','linewidth',2)
+      plot(t{num},udum{num},'r','linewidth',2);hold all
+        plot(t{num},0*udum{num},'k','linewidth',1);hold all
+      plot(sav{num}(j2).t+offset(j),mean(sav{num}(j2).u),'b','linewidth',2)
       ylabel('$u$','interpreter','latex','fontsize',16)
       %xlabel('$t[s]$','interpreter','latex','fontsize',16)
       xlim([0 20]);
-      title([strrep(dname(21:end),'_','-'),' ',sprintf('%2.2f',Hrmsi(1)),' ',sprintf('%2.2f',stats.Tp)],'interpreter','latex','fontsize',12)
+      title(titlename,'interpreter','latex');
+%       title([strrep(dname(21:end),'_','-'),' ',sprintf('%2.2f',Hrmsi(1)),' ',sprintf('%2.2f',stats.Tp)],'interpreter','latex','fontsize',12)
       %print('-dpng',[dname2(21:end-1),'u.png'])
     
       subplot(3,1,2)
-      plot(t,-d,'r','linewidth',2);hold all
-      plot(t,0*t+mean(-d),'r--','linewidth',1);hold all
-      plot(sav(j2).t+offset(j),-sav(j2).Dx,'b','linewidth',2)
-      plot(sav(j2).t+offset(j),ones(size(sav(j2).Dx))*mean(-sav(j2).Dx),'b--','linewidth',1)
+      plot(t{num},-d{num},'r','linewidth',2);hold all
+      plot(t{num},0*t{num}+mean(-d{num}),'r--','linewidth',1);hold all
+      plot(sav{num}(j2).t+offset(j),-sav{num}(j2).Dx,'b','linewidth',2)
+      plot(sav{num}(j2).t+offset(j),ones(size(sav{num}(j2).Dx))*mean(-sav{num}(j2).Dx),'b--','linewidth',1)
       ylabel('$-D$','interpreter','latex','fontsize',16)
       %xlabel('$t[s]$','interpreter','latex','fontsize',16)
       xlim([0 20]);
@@ -131,11 +139,11 @@ if plottingfig2 ==1
       %print('-dpng',[dname2(21:end-1),'u.png'])
       
       subplot(3,1,3)
-      plot(t,0*F2,'k');hold all
-      hf(1) = plot(t,F2,'r','linewidth',2);hold all
-      plot(t,mean(F2)+0*t,'r--');hold all
-      hf(2) = plot(sav(j2).t+offset(j),sav(j2).Fx,'b','linewidth',2) ; 
-      plot(sav(j2).t+offset(j),sav(j2).meanFx+0*sav(j2).t,'b--','linewidth',1)
+      plot(t{num},0*F2{num},'k');hold all
+      hf(1) = plot(t{num},F2{num},'r','linewidth',2);hold all
+      plot(t{num},mean(F2{num})+0*t{num},'r--');hold all
+      hf(2) = plot(sav{num}(j2).t+offset(j),sav{num}(j2).Fx,'b','linewidth',2) ; 
+      plot(sav{num}(j2).t+offset(j),sav{num}(j2).meanFx+0*sav{num}(j2).t,'b--','linewidth',1)
       ylabel('$F_x $','interpreter','latex','fontsize',16)
       xlabel('$t[s]$','interpreter','latex','fontsize',16)
       xlim([0 20]);
