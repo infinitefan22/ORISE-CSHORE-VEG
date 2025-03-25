@@ -3,8 +3,11 @@ addpath('./ClaraFunctions') ;
 addpath('./data') ; 
 addpath('./mfiles') ; 
  %% Design elements and ease of use
-plottingfig1 = 1 ;
-plottingfig2 = 1 ; 
+plottingfig1 = 0 ;
+plottingfig2 = 0 ; 
+savefigures = 0 ; 
+savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_KeltyPlotsMar192025/'; 
+
 % set(0, 'DefaultAxesFontName', 'Nimbus Roman', 'DefaultTextFontName', 'Nimbus Roman')
  set(0,'defaultTextInterpreter','latex')
  set(groot,'defaultAxesTickLabelInterpreter','latex') 
@@ -12,7 +15,7 @@ plottingfig2 = 1 ;
 %% Setting Constants and Loading Data 
 CNT = 1 ; 
 % load('aalldata_Mar062025DELETE.mat') ;
-load('aalldata_Mar182025.mat') ;
+load('aalldata_Mar242025.mat') ;
 offset = [3.0 3.9 2.8 3.5 3.8 3.8 ]; 
 
 %% variables (within aalldata)
@@ -54,7 +57,9 @@ numofTrials = length(xi) ;
 
 for num = 1:length(xi)
     %%
-    trialnum = num ; titlename = join([strrep(categoryname, '_', '-'), ' Trial ', string(trialnum), ' $H_r_m_s$=', sprintf('%2.2f',Hrmsi{num}(1))], "") ;
+    trialnum = num ; titlename = join([strrep(categoryname, '_', '-'), ' Trial ', string(trialnum), ' $H_{rms}$=', sprintf('%2.2f',Hrmsi{num}(1))], "") ;
+    savfig1name = join([categoryname,'_Trial',string(num),'_WaveVeg.png'],'') ; 
+    savfig2name = join([categoryname,'_Trial',string(num),'_ModvsMeas.png'],'') ; 
     [j1, j2] = min(abs(xi{num}-43));
     j = num ; 
 
@@ -109,7 +114,7 @@ for num = 1:length(xi)
 %     %   a = axis;
 %     %   hf=fill([36 54 54 36],[a(3) a(3) a(4) a(4)],[.2 .5 .2]);set(hf,'facealpha',.2)
     %   axis(a)
-%     saveas(gcf, ['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_KeltyPlotsMar132025/', join([file,'_WaveVeg.fig'],'')])
+    if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig1name)) ; end
     end
 %%
 if plottingfig2 ==1
@@ -151,6 +156,7 @@ if plottingfig2 ==1
       hl = legend(hf,'Using Measured Data','Using Modeled Data','AutoUpdate','off');
       set(hl,'interpreter','latex','fontsize',14,'location','northeast') ;
     %  print('-dpng',[dname2(21:end-1),'_u_d_F.png']) EDITED CLARA
+     if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig2name)) ; end
 end
 
 end

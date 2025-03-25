@@ -59,8 +59,8 @@ for j = 1:length(dnames)
   u = [dat.u.u];u = u(:,2:5);%same as line 22 but for velocity
   xu = [dat.u.x];xu = xu(:,2:5);%velocity in x dir
   zu = [dat.u.z];zu = zu(:,2:5);%velocity in z dir
-  w = [dat.w.w];w = w(:,2:5);
-  zw = [dat.w.z];zw = zw(:,2:5);
+  w = [dat.w.w];w = w(:,2:5); %only velocity within mangroves is being saved
+  zw = [dat.w.z];zw = zw(:,2:5); % z coor of ADV
   xp = [dat.press.x];%access x field of press field of the data
 
   eta = [dat.wg.eta]; % water level elevation (where the water line is)
@@ -236,12 +236,14 @@ for j = 1:length(dnames)
       aalldata = structure_variables(aalldata, categoryname, 'stats', stats) ;
       aalldata = structure_variables(aalldata, categoryname, 't', t) ;
       aalldata = structure_variables(aalldata, categoryname, 'udum', udum) ;
+      aalldata = structure_variables(aalldata, categoryname, 'w', w) ; %ADV velocities
       aalldata = structure_variables(aalldata, categoryname, 'wavetype', wavetype) ;
       aalldata = structure_variables(aalldata, categoryname, 'waveperiod', waveperiod) ;
       aalldata = structure_variables(aalldata, categoryname, 'xi', xi) ;
       aalldata = structure_variables(aalldata, categoryname, 'xp', xp) ;
       aalldata = structure_variables(aalldata, categoryname, 'xwg', xwg) ; 
-      
+      aalldata = structure_variables(aalldata, categoryname, 'zw', zw) ; %ADV z coordinates
+
     else 
         disp("Trial " +dnames(j).name+ " has been skipped")
         if ~isempty(skippedtrials)
@@ -253,4 +255,4 @@ for j = 1:length(dnames)
 end %CLARA
 
 %%
-%  save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_Mar182025.mat'], 'aalldata') ; 
+  save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_Mar242025.mat'], 'aalldata') ; 
