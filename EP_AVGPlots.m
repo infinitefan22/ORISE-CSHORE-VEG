@@ -1,10 +1,11 @@
-clear ; clc ; close all
+% clear ; clc ; close all ; 
 addpath('./ClaraFunctions') ; 
 addpath('./data') ; 
 addpath('./mfiles') ; 
+load('aalldata_Mar242025.mat') ;
  %% Design elements and ease of use
-% plottingfig1 = 0 ;
-% plottingfig2 = 0 ; 
+ plotfig1 = 0 ;
+% plotfig2 = 0 ; 
 % savefigures = 0 ; 
 % savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_KeltyPlotsMar192025/'; 
 
@@ -15,8 +16,9 @@ addpath('./mfiles') ;
 %% Setting Constants and Loading Data 
 cnt = 1 ; 
 yw = [-1.425, -1.428, -1.428, -1.433] ; %location of AVGs along width of wave flume (w2-5)
+AVDlabel = {'AVD 2', 'AVD 3','AVD 4','AVD 5'} ; 
 % load('aalldata_Mar062025DELETE.mat') ;
-load('aalldata_Mar242025.mat') ;
+
 %% Setttting Variables
 categoryname = 'HighDensity_h270_hv182_NoWall' ;
    alpha = aalldata.(categoryname).alpha ; 
@@ -56,13 +58,33 @@ NumofTrials = length(t) ;
 %% Start of Trial Indp Sections
 for num = 1:NumofTrials
     trialnum = num ; titlename = join([strrep(categoryname, '_', '-'), ' Trial ', string(trialnum)], "") ;
-    w = w{num} ; 
+    ww = w{num} ; 
+    tt = t{num} ; 
 %% Calculations
-    for ii = 1:width(w)
-        vrms(ii) = mean(sqrt(w(:,ii)^2)) ;
+    vrms = zeros(1, width(ww)) ; 
+    for ii = 1:width(ww)
+        vrms(ii) = mean(sqrt(ww(:,ii).^2)) ;
+    end
+    vrmstrial(num, :) = vrms ; 
 %% Plotting
 if plotfig1 == 1 
-    plot(w{num}(1))
+    figure(cnt) ; cnt = cnt+1 ; 
+        for jnum=1:width(ww)
+            plot(tt,ww(:,jnum),'LineWidth',2) ; hold on 
+        end
+    xlabel('$t[s]$','fontsize',16)
+    ylabel('$u$','fontsize',16)
+     ylim([min(min(ww))-.2, max(max(ww))+.2])
+    title(titlename,'interpreter','latex');
+    legend(AVDlabel)
+end
+
+if plotfig2 ==1
+    figure(cnt) ; cnt=cnt+1 ; 
+    scatter(num*ones(1,1),vrms, 100, 'filled') ; hold on 
+    for lnum =1:width(ww)
+        text(num, vrms(lnum),num2str(vrms(lnum)), 'VerticalAlignment','bottom', 'HorizontalAlignment','center')
+    end
 end
 
 end
