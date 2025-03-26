@@ -1,11 +1,11 @@
-% clear ; clc ; close all ; 
+clear ; clc ; close all ; 
 addpath('./ClaraFunctions') ; 
 addpath('./data') ; 
 addpath('./mfiles') ; 
 load('aalldata_Mar242025.mat') ;
  %% Design elements and ease of use
  plotfig1 = 0 ;
-% plotfig2 = 0 ; 
+ plotfig2 = 1 ; 
 % savefigures = 0 ; 
 % savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_KeltyPlotsMar192025/'; 
 
@@ -16,6 +16,7 @@ load('aalldata_Mar242025.mat') ;
 %% Setting Constants and Loading Data 
 cnt = 1 ; 
 yw = [-1.425, -1.428, -1.428, -1.433] ; %location of AVGs along width of wave flume (w2-5)
+graphcolors = lines(4) ; %number is the number of AVD gauges
 AVDlabel = {'AVD 2', 'AVD 3','AVD 4','AVD 5'} ; 
 % load('aalldata_Mar062025DELETE.mat') ;
 
@@ -79,12 +80,30 @@ if plotfig1 == 1
     legend(AVDlabel)
 end
 
+end
+%% Outside of Trial Loop
 if plotfig2 ==1
     figure(cnt) ; cnt=cnt+1 ; 
-    scatter(num*ones(1,1),vrms, 100, 'filled') ; hold on 
-    for lnum =1:width(ww)
-        text(num, vrms(lnum),num2str(vrms(lnum)), 'VerticalAlignment','bottom', 'HorizontalAlignment','center')
-    end
-end
+%     for num = 1:NumofTrials
+%     for onum = 1:height(graphcolors)
+%         scatter(num*ones(1,1),vrmstrial(num,onum), 100, graphcolors(onum,:), 'filled') ; hold on 
+%         for lnum =1:4 % for 4 AVDs
+%             text(num, vrmstrial(num,onum),num2str(vrmstrial(num,onum)), 'VerticalAlignment','bottom', 'HorizontalAlignment','center')
+%         end
+%     end
+%     end
+        dummyscatter = ones(1,height(graphcolors)) ; 
+        for dumnum = 1:height(graphcolors)
+            scatter(ones(1,1), dummyscatter(dumnum), graphcolors(dumnum,:), 'markersize', 0) ; 
+        end
+        legend(dummyscatter, AVDlabel, 'location','best')
+    xlim([0, NumofTrials+1])
+    xlabel('Trial Number','fontsize',16)
+    ylabel('$u$','fontsize',16)
+    title(join([string(categoryname), ' AVD Velocity'], ""))
 
 end
+
+%% 
+figure(1)
+scatter([1,2,3,4],[1,2,3,4])
