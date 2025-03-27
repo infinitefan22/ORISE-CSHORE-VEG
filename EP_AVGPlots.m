@@ -1,13 +1,13 @@
-clear ; clc ; close all ; 
+% clear ; clc ; close all ; 
 addpath('./ClaraFunctions') ; 
 addpath('./data') ; 
 addpath('./mfiles') ; 
-load('aalldata_Mar242025.mat') ;
+ %load('aalldata_Mar242025.mat') ;
  %% Design elements and ease of use
- plotfig1 = 0 ;
+ plotfig1 = 1 ;
  plotfig2 = 1 ; 
-% savefigures = 0 ; 
-% savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_KeltyPlotsMar192025/'; 
+ savefigures = 1 ; % the figs must be plotted in order to save them
+ savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_AVDPlotsMar272025/'; 
 
 % set(0, 'DefaultAxesFontName', 'Nimbus Roman', 'DefaultTextFontName', 'Nimbus Roman')
  set(0,'defaultTextInterpreter','latex')
@@ -17,7 +17,7 @@ load('aalldata_Mar242025.mat') ;
 cnt = 1 ; 
 yw = [-1.425, -1.428, -1.428, -1.433] ; %location of AVGs along width of wave flume (w2-5)
 graphcolors = lines(4) ; %number is the number of AVD gauges
-AVDlabel = {'AVD 2', 'AVD 3','AVD 4','AVD 5'} ; 
+AVDlabel = {'AVD 2, $d=1.404$m', 'AVD 3, $d=1.550$m','AVD 4, $d=1.720$m','AVD 5, $d=1.858$m'} ; 
 % load('aalldata_Mar062025DELETE.mat') ;
 
 %% Setttting Variables
@@ -56,9 +56,12 @@ categoryname = 'HighDensity_h270_hv182_NoWall' ;
    zw = aalldata.(categoryname).zw ; 
 %% Length Dep Constants
 NumofTrials = length(t) ; 
+savfig2name = join([categoryname,'_AVDmeanvelocity.png'],'') ;
 %% Start of Trial Indp Sections
 for num = 1:NumofTrials
     trialnum = num ; titlename = join([strrep(categoryname, '_', '-'), ' Trial ', string(trialnum)], "") ;
+    savfig1name = join([categoryname,'_Trial',string(num),'_ADV.png'],'') ; 
+    
     ww = w{num} ; 
     tt = t{num} ; 
 %% Calculations
@@ -78,32 +81,26 @@ if plotfig1 == 1
      ylim([min(min(ww))-.2, max(max(ww))+.2])
     title(titlename,'interpreter','latex');
     legend(AVDlabel)
+    if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig1name)) ; end
 end
 
 end
 %% Outside of Trial Loop
 if plotfig2 ==1
     figure(cnt) ; cnt=cnt+1 ; 
-%     for num = 1:NumofTrials
-%     for onum = 1:height(graphcolors)
-%         scatter(num*ones(1,1),vrmstrial(num,onum), 100, graphcolors(onum,:), 'filled') ; hold on 
-%         for lnum =1:4 % for 4 AVDs
-%             text(num, vrmstrial(num,onum),num2str(vrmstrial(num,onum)), 'VerticalAlignment','bottom', 'HorizontalAlignment','center')
-%         end
-%     end
-%     end
-        dummyscatter = ones(1,height(graphcolors)) ; 
-        for dumnum = 1:height(graphcolors)
-            scatter(ones(1,1), dummyscatter(dumnum), graphcolors(dumnum,:), 'markersize', 0) ; 
+    for num = 1:NumofTrials
+    for onum = 1:height(graphcolors)
+        scatter(num*ones(1,1),vrmstrial(num,onum), 100, graphcolors(onum,:), 'filled') ; hold on 
+        for lnum =1:4 % for 4 AVDs
+            text(num, vrmstrial(num,onum),string(round(vrmstrial(num,onum),3)), 'VerticalAlignment','bottom', 'HorizontalAlignment','right', 'fontsize', 10)
         end
-        legend(dummyscatter, AVDlabel, 'location','best')
-    xlim([0, NumofTrials+1])
+    end
+    end
+    legend(vrmstrial(1,:), AVDlabel, 'location','northeast') ; %lgd.Position = [6.5, 3.5,.2, .08] ;%, 'location','northeast')
+    xlim([0, NumofTrials+1]) ; xticks(0:1:NumofTrials+1)
     xlabel('Trial Number','fontsize',16)
-    ylabel('$u$','fontsize',16)
-    title(join([string(categoryname), ' AVD Velocity'], ""))
+    ylabel('$u$ [m/s]','fontsize',16)
+    title(join([titlename, ' AVD Velocity'], ""))
+    if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig2name)) ; end
 
 end
-
-%% 
-figure(1)
-scatter([1,2,3,4],[1,2,3,4])
