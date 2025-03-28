@@ -235,8 +235,9 @@ for j = 1:length(dnames)
       aalldata = structure_variables(aalldata, categoryname, 'sav', sav) ;
       aalldata = structure_variables(aalldata, categoryname, 'stats', stats) ;
       aalldata = structure_variables(aalldata, categoryname, 't', t) ;
-      aalldata = structure_variables(aalldata, categoryname, 'udum', udum) ;
-      aalldata = structure_variables(aalldata, categoryname, 'w', w) ; %ADV velocities
+      aalldata = structure_variables(aalldata, categoryname, 'u', u) ; % ADV horizontal velocities (2:5), parallel to flow
+      aalldata = structure_variables(aalldata, categoryname, 'udum', udum) ; % ADV 3/4 only
+      aalldata = structure_variables(aalldata, categoryname, 'w', w) ; %ADV vertical velocities
       aalldata = structure_variables(aalldata, categoryname, 'wavetype', wavetype) ;
       aalldata = structure_variables(aalldata, categoryname, 'waveperiod', waveperiod) ;
       aalldata = structure_variables(aalldata, categoryname, 'xi', xi) ;
@@ -255,4 +256,4 @@ for j = 1:length(dnames)
 end %CLARA
 
 %%
-  save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_Mar242025.mat'], 'aalldata') ; 
+  save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_Mar282025.mat'], 'aalldata') ; 
