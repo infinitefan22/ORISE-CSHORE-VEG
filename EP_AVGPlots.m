@@ -1,13 +1,18 @@
-% clear ; clc ; close all ; 
+%  clear ; clc ; close all ; 
 addpath('./ClaraFunctions') ; 
 addpath('./data') ; 
 addpath('./mfiles') ; 
- load('aalldata_Mar242025.mat') ;
+%  load('aalldata_Mar282025.mat') ;
  %% Design elements and ease of use
  plotfig1 = 0 ;
- plotfig2 = 1 ; 
- savefigures = 1 ; % the figs must be plotted in order to save them
- savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_ADVPlotsMar282025/'; 
+ plotfig2 = 0 ; 
+ plotfig205 = 0 ; % subplot ver of fig 2
+ plotfig3 = 1 ; 
+ savefigures = 0 ; % the figs must be plotted in order to save them
+
+ savfig205name = 'AllTrials_ADVmeanvelocity.png' ; 
+ savefig3name = 'AllLayouts_ADVmeanvelocity.png' ; 
+ savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_ADVPlotsMar312025/'; 
 
 % set(0, 'DefaultAxesFontName', 'Nimbus Roman', 'DefaultTextFontName', 'Nimbus Roman')
  set(0,'defaultTextInterpreter','latex')
@@ -19,7 +24,7 @@ yw = [-1.425, -1.428, -1.428, -1.433] ; %location of AVGs along width of wave fl
 graphcolors = lines(4) ; %number is the number of ADV gauges
 ADVlabel = {'ADV 2, $d=1.404$m', 'ADV 3, $d=1.550$m','ADV 4, $d=1.720$m','ADV 5, $d=1.858$m'} ; 
 % load('aalldata_Mar062025DELETE.mat') ;
-fieldnames = fieldnames(aalldata) ;
+clear fieldnames ; fieldnames = fieldnames(aalldata) ;
 %% total category names loop
 for totalnum = 1:length(fieldnames)
 %% Setting Variables
@@ -45,24 +50,26 @@ categoryname = fieldnames{totalnum} ; %'HighDensity_h270_hv182_NoWall' ;
    modelHrms = aalldata.(categoryname).modelHrms ;
    p = aalldata.(categoryname).p ; 
    p_init = aalldata.(categoryname).p_init ; 
-   Re = aalldata.(categoryname).Re ; 
+%    Re = aalldata.(categoryname).Re ; 
    sav = aalldata.(categoryname).sav ; 
    stats = aalldata.(categoryname).stats ; 
    t = aalldata.(categoryname).t ; 
-   w = aalldata.(categoryname).w ; 
+%    w = aalldata.(categoryname).w ; 
    u = aalldata.(categoryname).u ; 
    udum = aalldata.(categoryname).udum ; 
    waveperiod = aalldata.(categoryname).waveperiod ; 
    xi = aalldata.(categoryname).xi ; 
    xp = aalldata.(categoryname).xp ; 
    xwg = aalldata.(categoryname).xwg ; 
-   zw = aalldata.(categoryname).zw ; 
+%    zw = aalldata.(categoryname).zw ; 
 %% Length Dep Constants
 NumofTrials = length(t) ; 
 savfig2name = join([categoryname,'_ADVmeanvelocity.png'],'') ;
+
 %% Start of Trial Indp Sections
 for num = 1:NumofTrials
-    trialnum = num ; titlename = join([strrep(categoryname, '_', '-'), ' Trial ', string(trialnum)], "") ;
+    trialnum = num ; titlename_trial = join([strrep(categoryname, '_', '-'), ' Trial ', string(trialnum)], "") ;
+    titlename = join([strrep(categoryname, '_', '-')], "") ;
     savfig1name = join([categoryname,'_Trial',string(num),'_ADV.png'],'') ; 
     
     uu = u{num} ; 
@@ -70,11 +77,12 @@ for num = 1:NumofTrials
 %% Calculations
     vrms = zeros(1, width(uu)) ; 
     for ii = 1:width(uu)
-        vrms(ii) = mean(sqrt(uu(:,ii).^2)) ;
+        vrms(ii) = rms(uu(:,ii)) ;
     end
     vrmstrial(num, :) = vrms ; 
+    vrmscategories.(categoryname) = rms(vrmstrial) ;
 %% Plotting
-if plotfig1 == 1 
+if plotfig1 == 1 % ADV veloccity over time / Trial
     figure(cnt) ; cnt = cnt+1 ; 
         for jnum=1:width(uu)
             plot(tt,uu(:,jnum),'LineWidth',2) ; hold on 
@@ -82,15 +90,15 @@ if plotfig1 == 1
     xlabel('$t[s]$','fontsize',16)
     ylabel('$u$','fontsize',16)
      ylim([min(min(uu))-.2, max(max(uu))+.2])
-    title(titlename,'interpreter','latex');
+    title(titlename_trial,'interpreter','latex');
     legend(ADVlabel)
     if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig1name)) ; end
 end
 
-end
+end %specific trials loop
 %% Outside of Trial Loop
-if plotfig2 ==1
-    figure(cnt) ; cnt=cnt+1 ; 
+if plotfig2 ==1 % ave velocity/trial/layout
+    figure(cnt) ;cnt = cnt+1 ; 
     for num = 1:NumofTrials
     for onum = 1:height(graphcolors)
         scatter(num*ones(1,1),vrmstrial(num,onum), 100, graphcolors(onum,:), 'filled') ; hold on 
@@ -105,6 +113,40 @@ if plotfig2 ==1
     ylabel('$u$ [m/s]','fontsize',16)
     title(join([titlename, ' ADV Velocity'], ""))
     if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig2name)) ; end
-
 end
+
+if plotfig205 ==1 % subplot ver of fig 2
+    figure(100) ; %can't put cnt+1 here, so need at start of next fig
+    sgtitle('ADV Velocity') 
+    cnum = 0 ; if contains(categoryname, 'LowDensity') ; cnum =1 ;end
+    subplot(3,4,totalnum+cnum) ;
+    for num = 1:NumofTrials
+    for onum = 1:height(graphcolors)
+        scatter(num*ones(1,1),vrmstrial(num,onum), 36, graphcolors(onum,:), 'filled') ; hold on 
+    end
+    end
+    if totalnum==length(fieldnames) ; legend(vrmstrial(1,:), ADVlabel, 'location','bestoutside') ; end %lgd.Position = [6.5, 3.5,.2, .08] ;%, 'location','northeast')
+    xlim([0, NumofTrials+1]) ; xticks(0:1:NumofTrials+1)
+    ylim([0,.8]) ; yticks(0:.2:.8) ; %make sure the max are the same for ylim and yticks
+    xlabel('Trial Number') %,'fontsize',8)
+    ylabel('$u$ [m/s]') %,'fontsize',8)
+    title(titlename)
+    if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig205name)) ; end
+end
+
+if plotfig3 ==1 % ave velocity of all layouts 
+    figure(101) ; 
+    for onum = 1:height(graphcolors)
+        scatter(totalnum*ones(1,1),vrmscategories.(categoryname)(onum), 100, graphcolors(onum,:), 'filled') ; hold on 
+    end
+    legend(vrmstrial(1,:), ADVlabel, 'location','northeast') ; %lgd.Position = [6.5, 3.5,.2, .08] ;%, 'location','northeast')
+    xlim([0, length(fieldnames)+1]) ; xticks(0:1:length(fieldnames)+1)
+    xticklabels(fieldnames)
+    xlabel('Wave Flume Layout','fontsize',16)
+    ylabel('$u$ [m/s]','fontsize',16)
+    title('ADV Mean Velocity per Layout')
+    if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig3name)) ; end
+end
+
 end %total category names loop
+
