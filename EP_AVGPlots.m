@@ -4,14 +4,19 @@ addpath('./data') ;
 addpath('./mfiles') ; 
 %  load('aalldata_Mar282025.mat') ;
  %% Design elements and ease of use
- plotfig1 = 0 ;
- plotfig2 = 0 ; 
- plotfig205 = 0 ; % subplot ver of fig 2
- plotfig3 = 1 ; 
  savefigures = 0 ; % the figs must be plotted in order to save them
-
+ plotfig1 = 0 ; %indv trial velocity vs time
+ plotfig2 = 0 ; % indv layout ave velocity/trial
+ plotfig205 = 0 ; % subplot ver of fig 2
+ plotfig3 = 0 ; % all layouts ave velocity/layout
+ plotfig4 = 0 ; % indv layout ave Re/trial
+ plotfig405 = 1 ; % subplot ver of fig 4
+ plotfig5 = 1 ; % all layouts ave Re/layout
+ 
  savfig205name = 'AllTrials_ADVmeanvelocity.png' ; 
- savefig3name = 'AllLayouts_ADVmeanvelocity.png' ; 
+ savfig3name = 'AllLayouts_ADVmeanvelocity.png' ; 
+ savefig405name = 'AllTrials_ADVrmsRe.png' ;
+ savefig5name = 'AllLayouts_ADVrmsRe.png' ;
  savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_ADVPlotsMar312025/'; 
 
 % set(0, 'DefaultAxesFontName', 'Nimbus Roman', 'DefaultTextFontName', 'Nimbus Roman')
@@ -19,11 +24,12 @@ addpath('./mfiles') ;
  set(groot,'defaultAxesTickLabelInterpreter','latex') 
  set(groot, 'defaultLegendInterpreter','latex')
 %% Setting Constants and Loading Data 
-cnt = 1 ; 
+cnt = 1 ; % for graphs 1-100
+cnt100 = 1 ; % for graphs 100+
 yw = [-1.425, -1.428, -1.428, -1.433] ; %location of AVGs along width of wave flume (w2-5)
 graphcolors = lines(4) ; %number is the number of ADV gauges
 ADVlabel = {'ADV 2, $d=1.404$m', 'ADV 3, $d=1.550$m','ADV 4, $d=1.720$m','ADV 5, $d=1.858$m'} ; 
-% load('aalldata_Mar062025DELETE.mat') ;
+Daverage = 0.038 ;
 clear fieldnames ; fieldnames = fieldnames(aalldata) ;
 %% total category names loop
 for totalnum = 1:length(fieldnames)
@@ -65,6 +71,7 @@ categoryname = fieldnames{totalnum} ; %'HighDensity_h270_hv182_NoWall' ;
 %% Length Dep Constants
 NumofTrials = length(t) ; 
 savfig2name = join([categoryname,'_ADVmeanvelocity.png'],'') ;
+savfig4name = join([categoryname,'_ADVrmsRe.png'],'') ;
 
 %% Start of Trial Indp Sections
 for num = 1:NumofTrials
@@ -75,12 +82,19 @@ for num = 1:NumofTrials
     uu = u{num} ; 
     tt = t{num} ; 
 %% Calculations
-    vrms = zeros(1, width(uu)) ; 
+    vrms = zeros(1, width(uu)) ; % vrmstrial = zeros(num,width(uu)) ; 
     for ii = 1:width(uu)
         vrms(ii) = rms(uu(:,ii)) ;
     end
     vrmstrial(num, :) = vrms ; 
     vrmscategories.(categoryname) = rms(vrmstrial) ;
+
+    Re = zeros(1,width(vrms)) ; % Retrial = zeros(num,length(vrms)) ; 
+    for jj = 1:width(vrms)
+        Re(jj) = vrms(jj) .* Daverage / 1002e-6 ; 
+    end
+    Retrial(num, :) = Re ; 
+    Recategories.(categoryname) = rms(Retrial) ; 
 %% Plotting
 if plotfig1 == 1 % ADV veloccity over time / Trial
     figure(cnt) ; cnt = cnt+1 ; 
@@ -96,7 +110,8 @@ if plotfig1 == 1 % ADV veloccity over time / Trial
 end
 
 end %specific trials loop
-%% Outside of Trial Loop
+%% Outside of Trial Loop 
+%%Velocity Plots
 if plotfig2 ==1 % ave velocity/trial/layout
     figure(cnt) ;cnt = cnt+1 ; 
     for num = 1:NumofTrials
@@ -110,13 +125,13 @@ if plotfig2 ==1 % ave velocity/trial/layout
     legend(vrmstrial(1,:), ADVlabel, 'location','northeast') ; %lgd.Position = [6.5, 3.5,.2, .08] ;%, 'location','northeast')
     xlim([0, NumofTrials+1]) ; xticks(0:1:NumofTrials+1)
     xlabel('Trial Number','fontsize',16)
-    ylabel('$u$ [m/s]','fontsize',16)
+    ylabel('$u_{rms}$ [m/s]','fontsize',16)
     title(join([titlename, ' ADV Velocity'], ""))
     if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig2name)) ; end
 end
 
 if plotfig205 ==1 % subplot ver of fig 2
-    figure(100) ; %can't put cnt+1 here, so need at start of next fig
+    figure(100) ;  %can't put cnt+1 here, so need at start of next fig (cause of subplots)
     sgtitle('ADV Velocity') 
     cnum = 0 ; if contains(categoryname, 'LowDensity') ; cnum =1 ;end
     subplot(3,4,totalnum+cnum) ;
@@ -129,13 +144,13 @@ if plotfig205 ==1 % subplot ver of fig 2
     xlim([0, NumofTrials+1]) ; xticks(0:1:NumofTrials+1)
     ylim([0,.8]) ; yticks(0:.2:.8) ; %make sure the max are the same for ylim and yticks
     xlabel('Trial Number') %,'fontsize',8)
-    ylabel('$u$ [m/s]') %,'fontsize',8)
+    ylabel('$u_{rms}$ [m/s]') %,'fontsize',8)
     title(titlename)
     if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig205name)) ; end
 end
 
 if plotfig3 ==1 % ave velocity of all layouts 
-    figure(101) ; 
+    figure(cnt) ; cnt=cnt+1;
     for onum = 1:height(graphcolors)
         scatter(totalnum*ones(1,1),vrmscategories.(categoryname)(onum), 100, graphcolors(onum,:), 'filled') ; hold on 
     end
@@ -143,9 +158,60 @@ if plotfig3 ==1 % ave velocity of all layouts
     xlim([0, length(fieldnames)+1]) ; xticks(0:1:length(fieldnames)+1)
     xticklabels(fieldnames)
     xlabel('Wave Flume Layout','fontsize',16)
-    ylabel('$u$ [m/s]','fontsize',16)
+    ylabel('$u_{rms}$ [m/s]','fontsize',16)
     title('ADV Mean Velocity per Layout')
     if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig3name)) ; end
+end
+
+if plotfig4 ==1 % ave velocity/trial/layout
+    figure(cnt) ;cnt = cnt+1 ; 
+    for num = 1:NumofTrials
+    for onum = 1:height(graphcolors)
+        scatter(num*ones(1,1),Retrial(num,onum), 100, graphcolors(onum,:), 'filled') ; hold on 
+        for lnum =1:4 % for 4 ADVs
+            text(num, Retrial(num,onum),string(round(Retrial(num,onum),3)), 'VerticalAlignment','bottom', 'HorizontalAlignment','right', 'fontsize', 10)
+        end
+    end
+    end
+    legend(Retrial(1,:), ADVlabel, 'location','northeast') ; %lgd.Position = [6.5, 3.5,.2, .08] ;%, 'location','northeast')
+    xlim([0, NumofTrials+1]) ; xticks(0:1:NumofTrials+1)
+    xlabel('Trial Number','fontsize',16)
+    ylabel('$Re_{rms}$','fontsize',16)
+    title(join([titlename, 'Reynolds Number'], ""))
+    if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig4name)) ; end
+end
+
+if plotfig405 ==1 % subplot ver of fig 2
+    figure(101) ; %can't put cnt+1 here, so need at start of next fig
+    sgtitle('Reynolds Number') 
+    cnum = 0 ; if contains(categoryname, 'LowDensity') ; cnum =1 ;end
+    subplot(3,4,totalnum+cnum) ;
+    for num = 1:NumofTrials
+    for onum = 1:height(graphcolors)
+        scatter(num*ones(1,1),Retrial(num,onum), 36, graphcolors(onum,:), 'filled') ; hold on 
+    end
+    end
+    if totalnum==length(fieldnames) ; legend(Retrial(1,:), ADVlabel, 'location','bestoutside') ; end %lgd.Position = [6.5, 3.5,.2, .08] ;%, 'location','northeast')
+    xlim([0, NumofTrials+1]) ; xticks(0:1:NumofTrials+1)
+    ylim([0,.8]) ; yticks(0:.2:.8) ; %make sure the max are the same for ylim and yticks
+    xlabel('Trial Number') %,'fontsize',8)
+    ylabel('$Re_{rms}$') %,'fontsize',8)
+    title(titlename)
+    if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig405name)) ; end
+end
+
+if plotfig5 ==1 % ave velocity of all layouts 
+    figure(102) ; 
+    for onum = 1:height(graphcolors)
+        scatter(totalnum*ones(1,1),Recategories.(categoryname)(onum), 100, graphcolors(onum,:), 'filled') ; hold on 
+    end
+    legend(Retrial(1,:), ADVlabel, 'location','northeast') ; %lgd.Position = [6.5, 3.5,.2, .08] ;%, 'location','northeast')
+    xlim([0, length(fieldnames)+1]) ; xticks(0:1:length(fieldnames)+1)
+    xticklabels(fieldnames)
+    xlabel('Wave Flume Layout','fontsize',16)
+    ylabel('$Re_{rms}$','fontsize',16)
+    title('$Re_{rms}$ per Layout')
+    if savefigures==1 ; saveas(gcf, fullfile(savfolderpath, savfig5name)) ; end
 end
 
 end %total category names loop
