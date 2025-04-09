@@ -2,7 +2,7 @@
 addpath('./ClaraFunctions') ; 
 addpath('./data') ; 
 addpath('./mfiles') ; 
-%     load('aalldata_Mar282025.mat') ;
+    load('aalldata_Mar282025.mat') ;
 %% Saving Data
 savfig1name = 'CdCorrelationPlotsomezoom.png' ; 
 savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_CdPlotsApr082025/'; 
