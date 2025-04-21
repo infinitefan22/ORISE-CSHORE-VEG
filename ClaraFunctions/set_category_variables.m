@@ -11,7 +11,7 @@ clear KC modeleta modelHrmsp p_init sav stats t u udum waveperiod xi xp xwg
    t = aalldata.(categoryname).t ; 
 %    w = aalldata.(categoryname).w ; 
    u = aalldata.(categoryname).u ; 
-   udum = aalldata.(categoryname).udum ; 
+   % udum = aalldata.(categoryname).udum ; 
    waveperiod = aalldata.(categoryname).waveperiod ; 
    xi = aalldata.(categoryname).xi ; 
    xp = aalldata.(categoryname).xp ; 
@@ -30,7 +30,7 @@ alpha = aalldata.(categoryname).alpha ;
    eta0a = aalldata.(categoryname).eta0a ; 
    eta0b = aalldata.(categoryname).eta0b ; 
    F2 = aalldata.(categoryname).F2 ; 
-   F2overCd = aalldata.(categoryname).F2overCd ; 
+   % F2overCd = aalldata.(categoryname).F2overCd ; 
    Hrmsi = aalldata.(categoryname).Hrmsi ; 
    hv = aalldata.(categoryname).hv ; 
   
