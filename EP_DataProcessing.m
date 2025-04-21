@@ -17,7 +17,10 @@ offset = [3.0 3.9 2.8 3.5 3.8 3.8 ]; %this line is why j can only go to 6
 BWidth = 3.66;Length = 18; %width and length of flume
 %% accessing files
 % basenameog = {'HighDensity_h270_hv182_NoWall' ,'HighDensity_h270_hv182_Wall'} ; % original basename
-basename = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/SummaryFiles/' ; 
+% basename = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/SummaryFiles/' ; 
+% basename = '/MATLAB Drive/ClaraZwolanek/data/SummaryFiles/' ; %MATLAB ONLINE
+currentfolder = pwd ; 
+basename = join([currentfolder, '/data/SummaryFiles/'], '') ; 
 % dnames = dir(['./data/',basename,'/T*']);
 dnames = dir([basename, '*Summary.mat']) ; 
 % bnames = dir([basename, 'Baseline*']) ; 
@@ -42,6 +45,7 @@ end
         
 aalldata = struct() ; 
 skippedtrials = {} ; 
+modeledTplist = {} ; 
 %% data processing
 for j = 1:length(dnames)
 %% % creating the aalldata structure aalldata.(categoryname).
@@ -183,6 +187,16 @@ for j = 1:length(dnames)
 % Kelty Cd Calculation (written by Clara)
     rownum = find(strcmp(exceltable.TrialName, file),1) ; 
     wavetype = exceltable.WaveType{rownum} ;
+    Tp = exceltable.Tp(rownum) ; 
+    if isnan(Tp)
+        Tp = exceltable.TargetT_Tp_FullStrokeDuration(rownum) ; 
+        if isempty(modeledTplist)
+            modeledTplist{1} = file ; 
+        else
+        modeledTplist{end+1} = file ; 
+        end
+    end
+
     alpha = exceltable.waveHeightDecayCoefficient(rownum) ; 
     Atm = Daverage ; %average projected area per height per tree (so i am using the weighted average diameter
     vegweth = hv ; %mean wetted height of vegetation (d)
@@ -223,27 +237,29 @@ for j = 1:length(dnames)
       aalldata = structure_variables(aalldata, categoryname, 'eta_init', eta_init) ;
       aalldata = structure_variables(aalldata, categoryname, 'eta_p', eta_p) ;
       aalldata = structure_variables(aalldata, categoryname, 'F2', F2) ;
-      aalldata = structure_variables(aalldata, categoryname, 'F2overCd', F2overCd) ;
+      % aalldata = structure_variables(aalldata, categoryname, 'F2overCd', F2overCd) ;
       aalldata = structure_variables(aalldata, categoryname, 'Hrmsi', Hrmsi) ; 
       aalldata = structure_variables(aalldata, categoryname, 'hv', hv) ;
       aalldata = structure_variables(aalldata, categoryname, 'KC', KC) ;
       aalldata = structure_variables(aalldata, categoryname, 'modelHrms', modelHrms) ;
       aalldata = structure_variables(aalldata, categoryname, 'modeleta', modeleta) ;
+      aalldata = structure_variables(aalldata, categoryname, 'modeledTplist', modeledTplist) ;
       aalldata = structure_variables(aalldata, categoryname, 'p', p) ;
       aalldata = structure_variables(aalldata, categoryname, 'p_init', p_init) ; 
       aalldata = structure_variables(aalldata, categoryname, 'Re', Re) ;
       aalldata = structure_variables(aalldata, categoryname, 'sav', sav) ;
       aalldata = structure_variables(aalldata, categoryname, 'stats', stats) ;
       aalldata = structure_variables(aalldata, categoryname, 't', t) ;
+      aalldata = structure_variables(aalldata, categoryname, 'Tp', Tp) ; %period from excel table
       aalldata = structure_variables(aalldata, categoryname, 'u', u) ; % ADV horizontal velocities (2:5), parallel to flow
-      aalldata = structure_variables(aalldata, categoryname, 'udum', udum) ; % ADV 3/4 only
-      aalldata = structure_variables(aalldata, categoryname, 'w', w) ; %ADV vertical velocities
+      % aalldata = structure_variables(aalldata, categoryname, 'udum', udum) ; % ADV 3/4 only
+      % aalldata = structure_variables(aalldata, categoryname, 'w', w) ; %ADV vertical velocities
       aalldata = structure_variables(aalldata, categoryname, 'wavetype', wavetype) ;
       aalldata = structure_variables(aalldata, categoryname, 'waveperiod', waveperiod) ;
       aalldata = structure_variables(aalldata, categoryname, 'xi', xi) ;
       aalldata = structure_variables(aalldata, categoryname, 'xp', xp) ;
       aalldata = structure_variables(aalldata, categoryname, 'xwg', xwg) ; 
-      aalldata = structure_variables(aalldata, categoryname, 'zw', zw) ; %ADV z coordinates
+      aalldata = structure_variables(aalldata, categoryname, 'zu', zu) ; %ADV z coordinates
 
     else 
         disp("Trial " +dnames(j).name+ " has been skipped")
@@ -256,4 +272,5 @@ for j = 1:length(dnames)
 end %CLARA
 
 %%
-  save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_Mar282025.mat'], 'aalldata') ; 
+  % save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_20250418.mat'], 'aalldata') ; 
+  % save(['/MATLAB Drive/ClaraZwolanek/data/', 'aalldata_20250421'], 'aalldata') ; %MATLAB ONLINE
