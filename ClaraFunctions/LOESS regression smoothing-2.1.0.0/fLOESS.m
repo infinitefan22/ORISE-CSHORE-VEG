@@ -33,6 +33,7 @@ function [smoothed] = fLOESS(noisy,span)
 % smoothed = fLOESS(noisy,span); 
 % 
 % % Plot the data
+% figure(1) % clara added
 % hold off
 % plot(x,clean,'k')
 % hold all
@@ -86,8 +87,15 @@ for i = 1:n
     YY =   [nansum(w_.*y_.*(x_.^0));...
             nansum(w_.*y_.*(x_.^1));...
             nansum(w_.*y_.*(x_.^2))];
-    
-    CC = XX\YY;
+    %% CLara Edits
+    % if rank(XX) == 3
+    %     
+    % else 
+    %     CC = pinv(XX) * YY;
+    % end
+    %% end of Clara Edits
+   
+CC = XX\YY;
     
     % calculate the fitted data point
     smoothed(i) = CC(1) + CC(2)*x(i) + CC(3)*x(i).^2;
