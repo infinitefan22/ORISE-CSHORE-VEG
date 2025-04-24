@@ -14,6 +14,20 @@ end
 
 ogTp = aalldata.(categoryname).Tp{num} ; 
 ogHrmsi = aalldata.(categoryname).Hrmsi{num} ; 
+ogwavetype = aalldata.(categoryname).wavetype{num} ; 
+
+fbTp = aalldata.(fbaseline).Tp ; 
+fbHrmsi = aalldata.(fbaseline).Hrmsi ; 
+fbwavetype = aalldata.(fbaseline).wavetype ; 
+
+for jj = 1:length(aalldata.(fbaseline).Tp)
+if aalldata.(fbaseline).wavetype{jj} == aalldata.(categoryname).wavetype{num} ; 
+
+if idxwavetype == 0
+    disp("wavetype match not found")
+end
+
+idxTp =  == ogTp ; 
 
 
 end %idk if this will end up being a function, but we'll see
