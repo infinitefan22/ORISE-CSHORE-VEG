@@ -31,7 +31,7 @@ for totalnum = 5:length(fieldnames)
 %% Length Dep Constants
 NumofTrials = length(t) ; 
 %% Start of Trial Indp Sections
-for num = [1] %1:NumofTrials  %
+for num = 1:NumofTrials  %
     if num == NumofTrials && NumofTrials <10 
         num4tt = join(['0',string(NumofTrials)],'') ; 
     elseif num == 1
@@ -93,7 +93,7 @@ title(titlename)
 % set(gcf, 'Units','normalized','OuterPosition',[ 0 0 1 1]) ; 
 set(gcf, 'Position', [100, 100, 1200, 800]);
 
- saveas(gcf, fullfile(savfolderpath, savfigname)) ; %close all
+ % saveas(gcf, fullfile(savfolderpath, savfigname)) ; %close all
 end 
 
 

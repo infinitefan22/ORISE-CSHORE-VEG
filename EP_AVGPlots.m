@@ -1,8 +1,8 @@
-%  clear ; clc ; close all ; 
+clearvars -except aalldata ; clc ; close all ; 
 addpath('./ClaraFunctions') ; 
 addpath('./data') ; 
 addpath('./mfiles') ; 
-%    load('aalldata_Mar282025.mat') ;
+     if ~exist('aalldata', "var") ;  load('aalldata_20250421.mat') ; end
  %% Design elements and ease of use
  savefigures = 0 ; % the figs must be plotted in order to save them
  plotfig1 = 0 ; %indv trial velocity vs time
@@ -12,9 +12,9 @@ addpath('./mfiles') ;
  plotfig4 = 0 ; % indv layout ave Re/trial
  plotfig405 = 0 ; % subplot ver of fig 4
  plotfig5 = 0 ; % all layouts ave Re/layout
- plotfig6 = 1 ; %dif velocity
- plotfig605 = 1 ; 
- plotfig7 = 1; 
+ plotfig6 = 0 ; %dif velocity
+ plotfig605 = 0 ; 
+ plotfig7 = 0; 
  
  savfig205name = 'AllTrials_ADVmeanvelocity.png' ; 
  savfig3name = 'AllLayouts_ADVmeanvelocity.png' ; 
@@ -41,39 +41,8 @@ clear fieldnames ; fieldnames = fieldnames(aalldata) ;
 for totalnum = 1:length(fieldnames)
 %% Setting Variables
 categoryname = fieldnames{totalnum} ; %'HighDensity_h270_hv182_NoWall' ;
-   alpha = aalldata.(categoryname).alpha ; 
-   Cdexact2 = aalldata.(categoryname).Cdexact2 ; 
-   CdKelty = aalldata.(categoryname).CdKelty ; 
-   d = aalldata.(categoryname).d ; 
-   datEf = aalldata.(categoryname).datEf ; 
-   dateta = aalldata.(categoryname).dateta ;
-   datHrms = aalldata.(categoryname).datHrms ; 
-   eta = aalldata.(categoryname).eta ; 
-   eta_init = aalldata.(categoryname).eta_init ; 
-   eta_p = aalldata.(categoryname).eta_p ; 
-   eta0a = aalldata.(categoryname).eta0a ; 
-   eta0b = aalldata.(categoryname).eta0b ; 
-   F2 = aalldata.(categoryname).F2 ; 
-   F2overCd = aalldata.(categoryname).F2overCd ; 
-   Hrmsi = aalldata.(categoryname).Hrmsi ; 
-   hv = aalldata.(categoryname).hv ; 
-   KC = aalldata.(categoryname).KC ; 
-   modeleta = aalldata.(categoryname).modeleta ;
-   modelHrms = aalldata.(categoryname).modelHrms ;
-   p = aalldata.(categoryname).p ; 
-   p_init = aalldata.(categoryname).p_init ; 
-%    Re = aalldata.(categoryname).Re ; 
-   sav = aalldata.(categoryname).sav ; 
-   stats = aalldata.(categoryname).stats ; 
-   t = aalldata.(categoryname).t ; 
-%    w = aalldata.(categoryname).w ; 
-   u = aalldata.(categoryname).u ; 
-   udum = aalldata.(categoryname).udum ; 
-   waveperiod = aalldata.(categoryname).waveperiod ; 
-   xi = aalldata.(categoryname).xi ; 
-   xp = aalldata.(categoryname).xp ; 
-   xwg = aalldata.(categoryname).xwg ; 
-%    zw = aalldata.(categoryname).zw ; 
+   set_category_variables
+
 %% Length Dep Constants
 NumofTrials = length(t) ; 
 savfig2name = join([categoryname,'_ADVmeanvelocity.png'],'') ;

@@ -1,8 +1,9 @@
-%  clear ; clc ; close all ; 
+clearvars -except aalldata ; clc ; close all ; 
 addpath('./ClaraFunctions') ; 
 addpath('./data') ; 
 addpath('./mfiles') ; 
-%      load('aalldata_Mar282025.mat') ;
+ if ~exist('aalldata', "var") ;  load('aalldata_20250421.mat') ; end
+ 
  savfigname = 'NewADVVelocityPlotsAllLayoutsWide.png' ; 
 savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/EP_ADVPlotsApr092025/'; 
 %        saveas(gcf, fullfile(savfolderpath, savfigname)) 
