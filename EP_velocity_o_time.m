@@ -11,7 +11,7 @@ addpath('./mfiles') ;
 %  savfigname = 'NewADVVelocityPlotsAllLayoutsWide.png' ; 
 % savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/Velocity_over_Time_20250414/'; 
 currentfolder = pwd ; %MATLABONLINE
-savfolderpath = join([currentfolder, '/ClaraFigures/20250423_velocity-o-time/'], '') ; 
+savfolderpath = join([currentfolder, '/ClaraFigures/20250424_velocity-o-time/'], '') ; 
 %        saveas(gcf, fullfile(savfolderpath, savfigname)) 
 % set(0, 'DefaultAxesFontName', 'Nimbus Roman', 'DefaultTextFontName', 'Nimbus Roman')
  set(0,'defaultTextInterpreter','latex')
@@ -25,13 +25,13 @@ savfolderpath = join([currentfolder, '/ClaraFigures/20250423_velocity-o-time/'],
  ADVlabel = {'ADV 2, $z=1.404$m', 'ADV 3, $z=1.550$m','ADV 4, $z=1.720$m','ADV 5, $z=1.858$m'} ; 
 zu = [1.4040, 1.5500, 1.7200, 1.8580] ; % ADV 2,3,4,5 (order is correct and checked)
 smoothvtrials = {} ; 
-for totalnum = 1:length(fieldnames)
+for totalnum = 5:length(fieldnames)
     categoryname = fieldnames{totalnum} ; % 'HighDensity_h270_hv182_NoWall' ; %
     set_category_variables
 %% Length Dep Constants
 NumofTrials = length(t) ; 
 %% Start of Trial Indp Sections
-for num = 1:NumofTrials  %
+for num = [1] %1:NumofTrials  %
     if num == NumofTrials && NumofTrials <10 
         num4tt = join(['0',string(NumofTrials)],'') ; 
     elseif num == 1
@@ -49,20 +49,32 @@ if contains(categoryname, 'h158')
     uu(:,4) = zeros(height(uu),1) ; 
 end
 
-clear savfigname ; savfigname = 'VelocityProfilesZOOM2.png' ; savfigname = join([categoryname, 'Trial',num4tt,savfigname],'_') ; 
+clear savfigname ; savfigname = 'vot smoothed ZOOM.png' ; savfigname = join([categoryname, 'Trial',num4tt,savfigname],'_') ; 
 
 %% fLOESS Function (from MATLAB FileExchange)
+
 fLtime = fLOESStime/(tt(2)-tt(1)) ; 
 if contains(fLOESSrange, 'sd')
     fLrange = std(uu) ; 
 else 
     fLrange = fLOESSrange  ; 
 end
-noisecheck = isNoisy(uu, fLrange, fLtime) ; 
+noisecheck = isNoisy(uu, fLrange*2, fLtime) ; 
+
+
 
 for wnum = 1:4
     if noisecheck(wnum) ==1 
-        uu(:, wnum) = fLOESS([transpose(tt),uu(:, wnum)], 64/length(uu(:, wnum))) ;%length(tt)/1000) ; 
+        lowpass = median(uu(:,wnum)) - std(uu(:,wnum))*1.25 ; 
+        highpass = median(uu(:,wnum)) + std(uu(:,wnum))*1.25 ; 
+        uuidx = uu(:,wnum) < highpass & uu(:,wnum) > lowpass; %corresponding indices are set to 1
+
+        for jj = 1:length(uuidx) ;
+            if uuidx(jj) == 0 ; 
+                uu(jj,wnum) = NaN ; 
+            end
+        end
+        uu(:, wnum) = fLOESS([transpose(tt),uu(:, wnum)], .03) ; %64/length(uu(:, wnum))
         wwnum = wnum+1 ; disp(titlename + " ADV " + wwnum + " has been smoothed")
         if ~isempty(smoothvtrials); smoothvtrials{end+1} = titlename; 
         else ; smoothvtrials{1} = titlename ; 
@@ -74,14 +86,14 @@ end
 figure(cnt) ; cnt=cnt+1;
 plot(tt,uu, 'LineWidth', 2)
 legend(ADVlabel)
- % xlim([0,30])
+xlim([5,10])
 xlabel('$t[s]$')
 ylabel('$u [m/s]$')
 title(titlename)
 % set(gcf, 'Units','normalized','OuterPosition',[ 0 0 1 1]) ; 
-set(gcf, 'Position', [100, 100, 2400, 1600]);
+set(gcf, 'Position', [100, 100, 1200, 800]);
 
- saveas(gcf, fullfile(savfolderpath, savfigname)) ; close all
+ saveas(gcf, fullfile(savfolderpath, savfigname)) ; %close all
 end 
 
 
