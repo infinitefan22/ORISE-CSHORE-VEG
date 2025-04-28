@@ -240,6 +240,7 @@ for j = 1:length(dnames)
       % aalldata = structure_variables(aalldata, categoryname, 'F2overCd', F2overCd) ;
       aalldata = structure_variables(aalldata, categoryname, 'Hrmsi', Hrmsi) ; 
       aalldata = structure_variables(aalldata, categoryname, 'hv', hv) ;
+      aalldata = structure_variables(aalldata, categoryname, 'k', k) ;
       aalldata = structure_variables(aalldata, categoryname, 'KC', KC) ;
       aalldata = structure_variables(aalldata, categoryname, 'modelHrms', modelHrms) ;
       aalldata = structure_variables(aalldata, categoryname, 'modeleta', modeleta) ;
@@ -273,4 +274,4 @@ end %CLARA
 
 %%
   % save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_20250418.mat'], 'aalldata') ; 
-  % save(['/MATLAB Drive/ClaraZwolanek/data/', 'aalldata_20250421'], 'aalldata') ; %MATLAB ONLINE
+   save(['/MATLAB Drive/ClaraZwolanek/data/', 'aalldata_20250428'], 'aalldata') ; %MATLAB ONLINE

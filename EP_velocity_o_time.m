@@ -6,7 +6,7 @@ addpath('./ClaraFunctions') ;
 addpath('./ClaraFunctions/LOESS regression smoothing-2.1.0.0') ;
 addpath('./data') ; 
 addpath('./mfiles') ; 
-     if ~exist('aalldata', "var") ;  load('aalldata_20250421.mat') ; end
+     if ~exist('aalldata', "var") ;  load('aalldata_20250428.mat') ; end
      
 %  savfigname = 'NewADVVelocityPlotsAllLayoutsWide.png' ; 
 % savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/Velocity_over_Time_20250414/'; 
