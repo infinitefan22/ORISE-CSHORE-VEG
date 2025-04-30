@@ -1,6 +1,6 @@
-% this code uses the top most ADV that is collecting data with the bottom
-% most ADV 
-
+% this code uses the top most ADV that is collecting data and the 2nd from
+% the bottom ADV. If there is no ADV available higher than the 2nd from
+% bottom (h158), the bottom ADV will be compared to the 2nd bottom
 clearvars -except aalldata ; clc ; close all ; 
 addpath('./ClaraFunctions') ; 
 addpath('./ClaraFunctions/LOESS regression smoothing-2.1.0.0') ;
@@ -58,12 +58,13 @@ for num = 1:NumofTrials  %
     hh = hv{num} ; % still water height
     cosh1 = cosh(k{num}.*(hh-zu(4))) ; 
     cosh2 = cosh(k{num}.*(hh-zu(1))) ; 
-    ucosh1 = uu(:,4) .* cosh1 ;
-    ucosh2 = uu(:,1) .* cosh2 ; 
+    ucosh1 = uu(:,4) .* cosh1 ; %top most
+    ucosh2 = uu(:,2) .* cosh2 ; %2nd from bottom
 if contains(categoryname, 'h158')
     uu(:,3) = zeros(height(uu),1) ;  
     uu(:,4) = zeros(height(uu),1) ; 
     ucosh1 = uu(:,2) .* cosh(k{num}.*(hh-zu(2))) ;
+    ucosh2 = uu(:,1) .* cosh2 ;
 end
 
 ucosh1rms = rms(ucosh1) ; 
@@ -129,5 +130,5 @@ g4 = plot(xxx, yyy, 'black') ; hold on
 % legend([g4] , {"1:1"})
 legend([g4, g1, g2, g3] , {"1:1", "Baseline", "High Density", "Low Density"})
 
-savfigname = "CoshDependencyColorBar.png" ;
+savfigname = "CoshDependencyColorBar2ndBotComp-ZOOM1.png" ;
   % saveas(gcf, fullfile(savfolderpath, savfigname)) ; %close all
