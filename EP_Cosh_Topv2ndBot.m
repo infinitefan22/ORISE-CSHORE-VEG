@@ -57,7 +57,7 @@ for num = 1:NumofTrials  %
 
     hh = hv{num} ; % still water height
     cosh1 = cosh(k{num}.*(hh-zu(4))) ; 
-    cosh2 = cosh(k{num}.*(hh-zu(1))) ; 
+    cosh2 = cosh(k{num}.*(hh-zu(2))) ; 
     ucosh1 = uu(:,4) .* cosh1 ; %top most
     ucosh2 = uu(:,2) .* cosh2 ; %2nd from bottom
 if contains(categoryname, 'h158')
@@ -88,32 +88,32 @@ kkhh = round( (k{num} .* hh) / kfactor) ; % value for color map
 clear savfigname ; savfigname = 'CoshDependence.png' ; savfigname = join([categoryname, 'Trial',num4tt,savfigname],'_') ; 
 %% plotting
 figure(1) ;
-if contains(categoryname, "Base")
-    g1 = scatter(coshratio,ucoshratio, 55, khcolors(kkhh,:), "^", 'filled', 'MarkerEdgeColor', "black") ; hold on
-elseif contains(categoryname, "High")
-    g2 = scatter(coshratio,ucoshratio, 55, khcolors(kkhh,:), "o", 'filled', 'MarkerEdgeColor', "black") ; hold on
-elseif contains(categoryname, "Low")
-    g3 = scatter(coshratio,ucoshratio, 55, khcolors(kkhh,:), "square", 'filled', 'MarkerEdgeColor', "black") ; hold on
-end
 % if contains(categoryname, "Base")
-%     g1 = scatter(xcrbase,ucrbase, 36, catcolors(totalnum,:), "^", 'filled') ; hold on
+%     g1 = scatter(coshratio,ucoshratio, 55, khcolors(kkhh,:), "^", 'filled', 'MarkerEdgeColor', "black") ; hold on
 % elseif contains(categoryname, "High")
-%     g2 = scatter(xcrhigh,ucrhigh, 36, catcolors(totalnum,:), "o", 'filled') ; hold on
+%     g2 = scatter(coshratio,ucoshratio, 55, khcolors(kkhh,:), "o", 'filled', 'MarkerEdgeColor', "black") ; hold on
 % elseif contains(categoryname, "Low")
-%     g3 = scatter(xcrlow,ucrlow, 36, catcolors(totalnum,:), "square", 'filled') ; hold on
+%     g3 = scatter(coshratio,ucoshratio, 55, khcolors(kkhh,:), "square", 'filled', 'MarkerEdgeColor', "black") ; hold on
 % end
+if contains(categoryname, "Base")
+    g1 = scatter(coshratio,ucoshratio, 55, catcolors(1,:), "^", 'filled', 'MarkerEdgeColor', "black") ; hold on
+elseif contains(categoryname, "High")
+    g2 = scatter(coshratio,ucoshratio, 55, catcolors(2,:), "o", 'filled', 'MarkerEdgeColor', "black") ; hold on
+elseif contains(categoryname, "Low")
+    g3 = scatter(coshratio,ucoshratio, 55, catcolors(3,:), "square", 'filled', 'MarkerEdgeColor', "black") ; hold on
+end
 
 
 xlim([0,3])
-xlabel('$cosh_1/cosh_2$')
+xlabel('$cosh_{ADV top}/cosh_{ADV 2nd bottom}$')
 ylim([0,4.5])
-ylabel('$u_{1,rms}/u_{2,rms}$')
-colormap(gca, winter)
-colorbar = colorbar; 
-colorbar.Label.String = '$k*hv$';
-colorbar.Label.FontSize = 12 ;
-colorbar.Label.Interpreter = 'latex' ;
-clim([kmapmin kmapmax])
+ylabel('$u_{ADV top,rms}/u_{ADV 2nd bottom,rms}$')
+% colormap(gca, winter)
+% colorbar = colorbar; 
+% colorbar.Label.String = '$k*hv$';
+% colorbar.Label.FontSize = 12 ;
+% colorbar.Label.Interpreter = 'latex' ;
+% clim([kmapmin kmapmax])
 title("Cosh Dependency")
 % set(gcf, 'Units','normalized','OuterPosition',[ 0 0 1 1]) ; 
 set(gcf, 'Position', [100, 100, 1200, 800]);
@@ -130,5 +130,5 @@ g4 = plot(xxx, yyy, 'black') ; hold on
 % legend([g4] , {"1:1"})
 legend([g4, g1, g2, g3] , {"1:1", "Baseline", "High Density", "Low Density"})
 
-savfigname = "CoshDependencyColorBar2ndBotComp-ZOOM1.png" ;
-  % saveas(gcf, fullfile(savfolderpath, savfigname)) ; %close all
+savfigname = "CoshDependency2ndBotCompColor2-ZOOM.png" ;
+  saveas(gcf, fullfile(savfolderpath, savfigname)) ; %close all
