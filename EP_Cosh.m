@@ -31,7 +31,7 @@ for totalnum = 1:length(fieldnames)
 end ; clear totalnum
 kmapmax = max(kh(:,1))  ;
 kmapmin = min(kh(:,2))  ;
-kfactor = (kmapmax)/length(khcolors) ; %-kmapmin
+kfactor = (kmapmax)/length(khcolors) ; %-kmapmin % for assigning the color in the color map
 
 for totalnum = 1:length(fieldnames)
     categoryname = fieldnames{totalnum} ; % 'HighDensity_h270_hv182_NoWall' ; %
