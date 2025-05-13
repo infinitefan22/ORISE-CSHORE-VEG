@@ -6,7 +6,7 @@ addpath('./mfiles') ;
      if ~exist('aalldata', "var") ;  load('aalldata_20250428.mat') ; end
 
 currentfolder = pwd ; %MATLABONLINE
-savfolderpath = join([currentfolder, '/ClaraFigures/EP_eta_v_u/20250506/Zoom 1 (5<x<35)/'], '') ; 
+savfolderpath = join([currentfolder, '/ClaraFigures/EP_eta_v_u/20250511/Full Size/'], '') ; 
 
 set(0,'defaultTextInterpreter','latex')
 set(groot,'defaultAxesTickLabelInterpreter','latex') 
@@ -49,45 +49,47 @@ for num = 1:NumofTrials  %
     hh = hv{num} ; % still water height
     uu = u{num} ; 
     tt = t{num} ; 
+    Hrmsii = rms(Hrmsi{num}) ; 
     eta_pp = eta_p{num} ; 
-
+    kh = k{num}*hh ; 
+    hhv = Hrmsii/hh ; 
 
 %% Plotting
     if contains(categoryname, 'h158') 
         for ADVnum = 1:2 %ignoring the ADVs that do not collect v consistently at that water height
         contsh = cosh(k{num}*(hh+zu(ADVnum)) / sinh(k{num}*hh)) ; 
         etaplot = eta_pp .* contsh ; 
-    
+
         figure(cnt)
-            sgtitle(join([titlename, ' $\eta$ vs. $u$'],''))
+            sgtitle(join([titlename, ', $kh$=', num2str(kh), ' $H_{rmsi}/hv$=' , num2str(hhv)],''))
             subplot(4,1, ADVnum)
             plot(tt, uu(:, ADVnum)) ; hold on
             plot(tt, etaplot(:, ADVnum)) ; hold on
             xlim([5, 35])
-            title(join(["ADV ", string(ADVnum)], ''))
+            title(join(["ADV ", string(ADVnum), ' d=', zu(ADVnum)], ''))
             legend({'Velocity', '$\eta$'})
-    
+
         end ; cnt = cnt+1 ; 
         set(gcf, 'Position', [100, 100, 1200, 800]);
-        savfigname = join(['EtaUComp ',titlename, 'zoom.png'],'') ;
+        savfigname = join(['EtaUComp ',titlename, '.png'],'') ;
         if savefig == 1 ; saveas(gcf, fullfile(savfolderpath, savfigname)) ; end %close all
     else
         for ADVnum = 1:4
         contsh = cosh(k{num}*(hh+zu(ADVnum)) / sinh(k{num}*hh)) ; 
         etaplot = eta_pp .* contsh ; 
-    
+
         figure(cnt)
-            sgtitle(join([titlename, ' $\eta$ vs. $u$'],''))
+            sgtitle(join([titlename, ', $kh$=', num2str(kh), ' $H_{rmsi}/hv$=' , num2str(hhv)],''))
             subplot(4,1, ADVnum)
             plot(tt, uu(:, ADVnum)) ; hold on
             plot(tt, etaplot(:, ADVnum)) ; hold on
             xlim([5, 35])
-            title(join(["ADV ", string(ADVnum)], ''))
+            title(join(["ADV ", string(ADVnum), ' d=', zu(ADVnum)], ''))
             legend({'Velocity', '$\eta$'})
 
         end ; cnt = cnt+1 ; 
         set(gcf, 'Position', [100, 100, 1200, 800]);
-        savfigname = join(['EtaUComp ',titlename, 'zoom.png'],'') ;
+        savfigname = join(['EtaUComp ',titlename, '.png'],'') ;
         if savefig == 1 ; saveas(gcf, fullfile(savfolderpath, savfigname)) ; end %close all
     end
 
