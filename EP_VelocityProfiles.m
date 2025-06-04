@@ -1,4 +1,4 @@
-clearvars -except aalldata ; clc ; close all ; 
+clearvars -except aalldata ; clc ; %close all ; 
 addpath('./ClaraFunctions') ; 
 addpath('./data') ; 
 addpath('./mfiles') ; 

@@ -6,13 +6,13 @@ addpath('./mfiles') ;
  %% Design elements and ease of use
  savefigures = 0 ; % the figs must be plotted in order to save them
  plotfig1 = 0 ; %indv trial velocity vs time
- plotfig2 = 0 ; % indv layout ave velocity/trial
+ plotfig2 = 1 ; % indv layout ave velocity/trial
  plotfig205 = 0 ; % subplot ver of fig 2
  plotfig3 = 0 ; % all layouts ave velocity/layout
- plotfig4 = 0 ; % indv layout ave Re/trial
+ plotfig4 = 1 ; % indv layout ave Re/trial
  plotfig405 = 0 ; % subplot ver of fig 4
  plotfig5 = 0 ; % all layouts ave Re/layout
- plotfig6 = 0 ; %dif velocity
+ plotfig6 = 1 ; %dif velocity
  plotfig605 = 0 ; 
  plotfig7 = 0; 
  

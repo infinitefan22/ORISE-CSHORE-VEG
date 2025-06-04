@@ -103,10 +103,11 @@ for totalnum = 5:length(fieldnames)
     bmatch.(categoryname).match = ones(1,NumofTrials) ; 
     gg1(totalnum-4) = scatter(difvmeancategories2.(categoryname), zu, 100, catcolors(totalnum-4,:), 'o', 'filled', 'MarkerEdgeColor', "black") ; %Mean not including x's
     ylim([1, 3])
+    xlim([-.5 .3])
     xlabel('$u_{mean}$ (m/s)')
     ylabel('Elevation (m)')
-    title('HD/LD $v_{mean}$ of all trials')
+    title('Low Density $v_{mean}$ of all trials')
     set(gcf, 'Position', [10, 10, 600, 400]);
     % saveas(gcf, fullfile(savfolderpath, savfigname))
 end
-legend(gg1, {'High Density h158 hv070', 'High Density h188 hv100', 'High Density h270 hv182', 'Low Density h158 hv073', 'Low Density h188 hv103', 'Low Density h233 hv148', 'Low Density h270 hv185'})
+legend(gg1, {'High Density h158 hv070', 'High Density h188 hv100', 'High Density h270 hv182','Low Density h158 hv073', 'Low Density h188 hv103', 'Low Density h233 hv148', 'Low Density h270 hv185'} ) ;%}); %,

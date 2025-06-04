@@ -131,9 +131,9 @@ for j = 1:length(dnames)
       if contains(dnames(j).name,'Base')
           N = 0;
       elseif contains(dnames(j).name,'High') 
-          N= 50*8/(Length*BWidth); %number of plants ( and roots) per unit area
+          N= 50*15/(Length*BWidth); %number of plants ( and roots) per unit area ; originally used 8 instead of 15
       elseif contains(dnames(j).name, 'Low')
-          N = 25*8/(Length*BWidth) ; %number of plants (and roots) per unit area / CLARA *8 assumed from the high density calc
+          N = 25*15/(Length*BWidth) ; %number of plants (and roots) per unit area / CLARA *8 assumed from the high density calc; originally used 8 instead of 15
       end
       [j1, j2] = min(abs(xi-43));
       

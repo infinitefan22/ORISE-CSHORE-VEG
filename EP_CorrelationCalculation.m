@@ -17,16 +17,19 @@ set(groot,'defaultAxesTickLabelInterpreter','latex')
 set(groot, 'defaultLegendInterpreter','latex')
 
 currentfolder = pwd ; %MATLABONLINE
-savfolderpath = join([currentfolder, '/ClaraFigures/CorrelationCalculation/20250603/'], '') ; 
+savfolderpath = join([currentfolder, '/ClaraFigures/CorrelationCalculation/20250604/'], '') ; 
 cnt = 1;
 clear fieldnames ; fieldnames = fieldnames(aalldata) ;
 ADVlabel = {'ADV 2, $z=1.404$m', 'ADV 3, $z=1.550$m','ADV 4, $z=1.720$m','ADV 5, $z=1.858$m'} ;
 graphcolors = hsv(7) ; 
 zu = [1.4040, 1.5500, 1.7200, 1.8580] ; % ADV 2,3,4,5 (order is correct and checked) ; from the bottom of the wave flume, not the false floor
 ffh = .85 ; %false floor height
-indvlayoutplot = 1 ; %plotting indv layout graphs. 1 for yes, anything else for no (0)
+indvlayoutplot = 0 ; %plotting indv layout graphs. 1 for yes, anything else for no (0)
+savfigs = 0;
+errbars = 1 ; 
 
 for totalnum = 5:length(fieldnames) %CATEGORIES LOOP
+    gcnum = totalnum-4 ; %should be changed with graphcolors to avoid error
     clear ch specADVval
     categoryname = fieldnames{totalnum} ; % 'HighDensity_h270_hv182_NoWall' ; %
     set_category_variables
@@ -47,8 +50,10 @@ for totalnum = 5:length(fieldnames) %CATEGORIES LOOP
     for ADVnnn = 1:4
         for num = 1:NumofTrials
             specADVval(num) = ch.etavu{num}(ADVnnn) ; 
+            sdmean(ADVnnn) = std(specADVval) ; 
         end
         ch.mean{ADVnnn} = mean(specADVval) ; 
+        
         % if contains(categoryname, '158') || contains(categoryname, '188')
         %     ch.mean{3} = NaN ; 
         %     ch.mean{4} = NaN ; 
@@ -73,41 +78,45 @@ for totalnum = 5:length(fieldnames) %CATEGORIES LOOP
         clear trialnumbers
         for num = 1:NumofTrials
             trialnumbers(num) = join(['Trial ',string(num)], '') ; trialnumbers(end+1) = '$mean$ all trials' ; 
-            scatter(ch.etavu{num}, zu, 36, trialcolors(num,:), 'o', 'filled', 'MarkerEdgeColor', 'black') ; hold on 
+            if errbars == 0; scatter(ch.etavu{num}, zu, 36, trialcolors(num,:), 'o', 'filled', 'MarkerEdgeColor', 'black') ; hold on ; end
         end
         % scatter(vrmscategories.(categoryname), zu, 100, 'black', 'filled') %RMS
-        scatter([ch.mean{:}], zu, 100, 'black', 'filled', 'MarkerEdgeColor', "black") ; hold on %Mean
-        legend(trialnumbers)
-        xlim([0 1.01])
+        scatter([ch.mean{:}], zu, 100, graphcolors(gcnum,:), 'filled', 'MarkerEdgeColor', "black") ; hold on %Mean
+        if errbars ==1 ; errorbar([ch.mean{:}], zu, sdmean,'horizontal','Color', graphcolors(gcnum,:), 'LineStyle', 'none') ; end
+        if errbars ==1; legend({'Mean Coherence', 'Standard Deviation'}); else; legend(trialnumbers);end
+        % xlim([0 1.01])
         xlabel('Coherence')
-        ylim([1.2 2])
+        ylim([1.2 2.2])
         yticks(zu) ; yticklabels(string(zu)) 
         ylabel('$z$ [m]')
         title(strrep(strrep(categoryname, '_NoWall', ''), '_', '-') + " Correlation $eta$ vs. $u$")
         set(gcf, 'Position', [10, 10, 600, 400]);
-        % saveas(gcf, fullfile(savfolderpath, savfigname))
+        savfigname = categoryname + "_ErrorBars_EtavU.png" ;
+        
+        if savfigs==1; pause(3); exportgraphics(gcf, fullfile(savfolderpath, savfigname), 'Resolution', 300) ; close all ;end
     end
 %% All Combined
-    % figure(100) ;
-    % for nnn = 1:NumofTrials
-    % scatter(ch.etavu{nnn}, zu, 36, graphcolors(totalnum-4,:), 'filled', shapetype, 'MarkerEdgeColor', 'k') ; hold on
-    % end
-    % gg1 = scatter([ch.mean{:}], zu, 100, graphcolors(totalnum-4,:), 'filled',shapetype, 'MarkerEdgeColor', "black") ; hold on %Mean
-    % if ~exist('graphes','var') ; graphes(1) = gg1 ; else ; graphes(end+1) = gg1 ; end
-    % if ~exist('legendentry','var') ; legendentry{1} = strrep(strrep(categoryname, '_NoWall', ''), '_', '-') ; else;legendentry{end+1} = strrep(strrep(categoryname, '_NoWall', ''), '_', '-') ; end 
-    % title("All Layout Correlation $eta$ vs. $u$")
-    % xlim([0 1.01])
-    % xlabel('Coherence')
-    % ylim([1.2 2])
-    % yticks(zu) ; yticklabels(string(zu)) 
-    % ylabel('$z$ [m]')
-    % % legend(graphes, fieldnames(5:end))
-    %  %see EP_Cosh for reference on legend for multiple trials but one shape being graphed 
+    figure(100) ;
+    for nnn = 1:NumofTrials
+    if errbars ==0; scatter(ch.etavu{nnn}, zu, 36, graphcolors(gcnum,:), 'filled', shapetype, 'MarkerEdgeColor', 'k') ; hold on ;end
+    end
+    gg1 = scatter([ch.mean{:}], zu, 100, graphcolors(gcnum,:), 'filled',shapetype, 'MarkerEdgeColor', "black") ; hold on %Mean
+    if ~exist('graphes','var') ; graphes(1) = gg1 ; else ; graphes(end+1) = gg1 ; end
+    if ~exist('legendentry','var') ; legendentry{1} = strrep(strrep(categoryname, '_NoWall', ''), '_', '-') ; else;legendentry{end+1} = strrep(strrep(categoryname, '_NoWall', ''), '_', '-') ; end 
+    if errbars ==1 ; errorbar([ch.mean{:}], zu, sdmean,'horizontal','Color', graphcolors(gcnum,:), 'LineStyle', 'none') ; end
+    title("All Layout Correlation $eta$ vs. $u$")
+    xlim([.5 1.01])
+    xlabel('Coherence')
+    ylim([1.2 2])
+    yticks(zu) ; yticklabels(string(zu)) 
+    ylabel('$z$ [m]')
+     legend(graphes, fieldnames(5:end))
+     %see EP_Cosh for reference on legend for multiple trials but one shape being graphed 
 end
 
 % figure(100) ;  legend(graphes, legendentry) %fieldnames(5:end))
-savfigname = "AllCorrelations_EtavU.png" ;
-  % exportgraphics(gcf, fullfile(savfolderpath, savfigname), 'Resolution', 300) ; %close all
+savfigname = "AllCorrelations__ErrorBars_EtavUzoom.png" ;
+  exportgraphics(gcf, fullfile(savfolderpath, savfigname), 'Resolution', 300) ; %close all
 
 
 %% Plotting

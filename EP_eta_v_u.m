@@ -1,4 +1,4 @@
-clearvars -except aalldata ; clc ; close all ; 
+clearvars -except aalldata corrvalues; clc ; close all ;
 addpath('./ClaraFunctions') ; 
 addpath('./ClaraFunctions/LOESS regression smoothing-2.1.0.0') ;
 addpath('./data') ; 
@@ -6,17 +6,18 @@ addpath('./mfiles') ;
      if ~exist('aalldata', "var") ;  load('aalldata_20250428.mat') ; end
 
 currentfolder = pwd ; %MATLABONLINE
-savfolderpath = join([currentfolder, '/ClaraFigures/EP_eta_v_u/20250520/Eta v U/'], '') ; 
+savfolderpath = join([currentfolder, '/ClaraFigures/EP_eta_v_u/20250522/EtaCosh v U zoom/'], '') ; 
 
 set(0,'defaultTextInterpreter','latex')
 set(groot,'defaultAxesTickLabelInterpreter','latex') 
 set(groot, 'defaultLegendInterpreter','latex')
-savefig = 1 ; 
+savefig = 0 ; 
 %% Constants
-cnt = 1;
+cnt = 1; 
 clear fieldnames ; fieldnames = fieldnames(aalldata) ;
 ADVlabel = {'ADV 2, $z=1.404$m', 'ADV 3, $z=1.550$m','ADV 4, $z=1.720$m','ADV 5, $z=1.858$m'} ; 
-zu = [1.4040, 1.5500, 1.7200, 1.8580] ; % ADV 2,3,4,5 (order is correct and checked)
+zu = [1.4040, 1.5500, 1.7200, 1.8580] ; % ADV 2,3,4,5 (order is correct and checked) ; from the bottom of the wave flume, not the false floor
+ffh = .85 ; %false floor height
 catcolors = hsv(3) ; 
 khcolors = winter(300) ; 
 for totalnum = 1:length(fieldnames)
@@ -28,7 +29,7 @@ for totalnum = 1:length(fieldnames)
     kh(totalnum,2) = min(kvalues)*min(hvvalues) ; 
 end ; clear totalnum
 
-for totalnum = 5:length(fieldnames)
+for totalnum = 1:length(fieldnames)
     categoryname = fieldnames{totalnum} ; % 'HighDensity_h270_hv182_NoWall' ; %
     set_category_variables
 %% Length Dep Constants
@@ -52,87 +53,59 @@ for num = 1:NumofTrials  %
         titlenameshort = 'High Density' ; 
     end
 
-    hh = hv{num} ; % still water height
+    hh = hv{num} ; % still water height at vegetation (in relation to false floor)
     uu = u{num} ; 
     tt = t{num} ; 
     Hrmsii = rms(Hrmsi{num}) ; 
     eta_pp = eta_p{num} ; % we are only interested in pressure at ADVS (press3 data)
     kh = k{num}*hh ; 
     hhv = Hrmsii/hh ; 
-
+    corrvalues = structure_variables(corrvalues, categoryname, 'u',u) ; % variables/values stored for correlation analysis
+    corrvalues = structure_variables(corrvalues, categoryname, 't',t) ; 
+    corrvalues = structure_variables(corrvalues, categoryname, 'uu',uu) ; 
+    corrvalues = structure_variables(corrvalues, categoryname, 'tt',tt) ; 
+    corrvalues = structure_variables(corrvalues, categoryname, 'Hrmsii',Hrmsii) ; 
+    etastore = eta_pp(:,3) ; 
+    corrvalues = structure_variables(corrvalues, categoryname, 'eta_pp',etastore) ; %rn eta_pp is for 4 adv, we only need the 3, at the location of the ADV stack
+    corrvalues = structure_variables(corrvalues, categoryname, 'kh',kh) ; 
+    corrvalues = structure_variables(corrvalues, categoryname, 'hhv',hhv) ; 
 %% Plotting
+    subplotnum2 = [4,3,2,1] ; 
     if contains(categoryname, 'h158') 
         subpnum = 2 ; 
+    elseif contains(categoryname, 'h188')
+        subpnum = 3 ; 
     else 
         subpnum = 4 ; 
     end
 
     for ADVnum = 1:subpnum
         contsh = cosh(k{num}*(hh+zu(ADVnum)) / sinh(k{num}*hh)) ; 
-        etaplot = eta_pp(:,3) ; % .* contsh ; 
+        % contsh = cosh((k{num}*(zu(ADVnum)-ffh)) / sinh(k{num}*hh)) ;
+        etaplot = eta_pp(:,3) .* contsh ; 
+
+        corrvalues = structure_variables(corrvalues, categoryname, 'eta_pCosh',etaplot) ; %storing etaplot
 
         figure(cnt)
             sgtitle(join([titlenameshort, ', $kh$=', num2str(kh), ' $H_{rmsi}/hv$=' , num2str(hhv)],''))
-            subplot(4,1, ADVnum)
+            subplot(4,1, subplotnum2(ADVnum))
             plot(tt, uu(:, ADVnum)) ; hold on
             plot(tt, etaplot) ; hold on
-            % xlim([5, 35])
-            % ylim([-2,2])
-            xlabel("time [s]")
-            title(join(["ADV ", string(ADVnum), ' d=', zu(ADVnum)], ''))
-            legend({'$u$ [m/s]', '$\eta$ [m]'}) % u = velocity, eta = water level elevation
+            xlim([5, 35])
+            ylim([-2,2])
+            if ADVnum ==1 ; xlabel("time [s]") ; end
+            title(join(["ADV ", string(ADVnum), ', z=', zu(ADVnum), 'm'], ''))
+            legend({'$u$ [m/s]', '$\eta*cosh$'}) % u = velocity, eta = water level elevation
 
     end ; cnt = cnt+1 ; 
+
         set(gcf, 'Position', [100, 100, 1800, 1200]);
-        savfigname = join(['EtaU ',titlename, '.png'],'') ;
-        pause(2)
+        savfigname = join(['EtaU ',titlename, 'zoom.png'],'') ;
+        % pause(3)
         if savefig == 1 ; exportgraphics(gcf, fullfile(savfolderpath, savfigname), 'Resolution', 300); end 
         %if savefig == 1 ; saveas(gcf, fullfile(savfolderpath, savfigname)) ; end %close all
 
 
 end   
 
-end
-
-   %      for ADVnum = 1:2 %ignoring the ADVs that do not collect v consistently at that water height
-   %      contsh = cosh(k{num}*(hh+zu(ADVnum)) / sinh(k{num}*hh)) ; 
-   %      etaplot = eta_pp(:,3) ; % .* contsh ; 
-   % 
-   %      figure(cnt)
-   %          sgtitle(join([titlenameshort, ', $kh$=', num2str(kh), ' $H_{rmsi}/hv$=' , num2str(hhv)],''))
-   %          subplot(4,1, ADVnum)
-   %          plot(tt, uu(:, ADVnum)) ; hold on
-   %          plot(tt, etaplot) ; hold on
-   %          xlim([5, 35])
-   %          ylim([-2,2])
-   %          title(join(["ADV ", string(ADVnum), ' d=', zu(ADVnum)], ''))
-   %          legend({'Velocity', '$\eta$'})
-   % 
-   %      end ; cnt = cnt+1 ; 
-   %      set(gcf, 'Position', [100, 100, 1800, 1200]);
-   %      savfigname = join(['EtaU ',titlename, 'zoom.png'],'') ;
-   %      pause(2)
-   %      if savefig == 1 ; exportgraphics(gcf, fullfile(savfolderpath, savfigname), 'Resolution', 300); end 
-   %      %if savefig == 1 ; saveas(gcf, fullfile(savfolderpath, savfigname)) ; end %close all
-   % else
-   %      for ADVnum = 1:4
-   %      contsh = cosh(k{num}*(hh+zu(ADVnum)) / sinh(k{num}*hh)) ; 
-   %      etaplot = eta_pp(:,3) ; % .* contsh ; 
-   % 
-   %      figure(cnt)
-   %          sgtitle(join([titlenameshort, ', $kh$=', num2str(kh), ' $H_{rmsi}/hv$=' , num2str(hhv)],''))
-   %          subplot(4,1, ADVnum)
-   %          plot(tt, uu(:, ADVnum)) ; hold on
-   %          plot(tt, etaplot) ; hold on
-   %          xlim([5, 35])
-   %          ylim([-2,2])
-   %          title(join(["ADV ", string(ADVnum), ' d=', zu(ADVnum)], ''))
-   %          legend({'Velocity', '$\eta$'})
-   % 
-   %      end ; cnt = cnt+1 ; 
-   %      set(gcf, 'Position', [100, 100, 1800, 1200]);
-   %      savfigname = join(['EtaU ',titlename, 'zoom.png'],'') ;
-   %      pause(2)
-   %      if savefig == 1 ; exportgraphics(gcf, fullfile(savfolderpath, savfigname), 'Resolution', 300); end 
-   %      %if savefig == 1 ; saveas(gcf, fullfile(savfolderpath, savfigname)) ; end %close all
-   %  end
+end 

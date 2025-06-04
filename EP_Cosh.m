@@ -1,7 +1,7 @@
 % this code uses the top most ADV that is collecting data with the bottom
 % most ADV 
 
-clearvars -except aalldata ; clc ; close all ; 
+clearvars -except aalldata corrvalues; clc ; close all ; 
 addpath('./ClaraFunctions') ; 
 addpath('./ClaraFunctions/LOESS regression smoothing-2.1.0.0') ;
 addpath('./data') ; 
@@ -9,7 +9,7 @@ addpath('./mfiles') ;
      if ~exist('aalldata', "var") ;  load('aalldata_20250428.mat') ; end
 
 currentfolder = pwd ; %MATLABONLINE
-savfolderpath = join([currentfolder, '/ClaraFigures/EP_Cosh/20250428/'], '') ; 
+savfolderpath = join([currentfolder, '/ClaraFigures/EP_Cosh/20250528/'], '') ; 
 
 set(0,'defaultTextInterpreter','latex')
 set(groot,'defaultAxesTickLabelInterpreter','latex') 
@@ -18,7 +18,8 @@ set(groot, 'defaultLegendInterpreter','latex')
 cnt = 1;
 clear fieldnames ; fieldnames = fieldnames(aalldata) ;
 ADVlabel = {'ADV 2, $z=1.404$m', 'ADV 3, $z=1.550$m','ADV 4, $z=1.720$m','ADV 5, $z=1.858$m'} ; 
-zu = [1.4040, 1.5500, 1.7200, 1.8580] ; % ADV 2,3,4,5 (order is correct and checked)
+zu = [1.4040, 1.5500, 1.7200, 1.8580] ; % ADV 2,3,4,5 (order is correct and checked) ; from the bottom of the wave flume, not the false floor
+ffh = .85 ; %false floor height
 catcolors = hsv(3) ; 
 khcolors = winter(300) ; 
 for totalnum = 1:length(fieldnames)
@@ -56,8 +57,10 @@ for num = 1:NumofTrials  %
     tt = t{num} ; 
 
     hh = hv{num} ; % still water height
-    cosh1 = cosh(k{num}.*(hh-zu(4))) ; 
-    cosh2 = cosh(k{num}.*(hh-zu(1))) ; 
+    % cosh1 = cosh(k{num}.*(hh-zu(4))) ; 
+    % cosh2 = cosh(k{num}.*(hh-zu(1))) ; 
+    cosh1 = cosh(k{num}.*(zu(4)-ffh)) ; 
+    cosh2 = cosh(k{num}.*(zu(1)-ffh)) ; 
     ucosh1 = uu(:,4) .* cosh1 ;
     ucosh2 = uu(:,1) .* cosh2 ; 
 if contains(categoryname, 'h158')
@@ -72,6 +75,7 @@ ucoshratio = ucosh1rms/ucosh2rms ;
 coshratio = cosh1./cosh2 ; 
 
 kkhh = round( (k{num} .* hh) / kfactor) ; % value for color map
+
 
 % if contains(categoryname, 'Basename')
 %     ucrbase(totalnum, num) = ucoshratio ; 
@@ -131,3 +135,7 @@ legend([g4, g1, g2, g3] , {"1:1", "Baseline", "High Density", "Low Density"})
 
 savfigname = "CoshDependencyColorBar.png" ;
   % saveas(gcf, fullfile(savfolderpath, savfigname)) ; %close all
+
+
+
+   % save(['/MATLAB Drive/ClaraZwolanek/data/'], 'stored_data')
