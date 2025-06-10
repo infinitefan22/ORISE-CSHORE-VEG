@@ -35,3 +35,49 @@ clear k KC modeleta modelHrmsp p_init sav stats t u udum waveperiod xi xp xwg
    xp = aalldata.(categoryname).xp ; 
    xwg = aalldata.(categoryname).xwg ; 
 %    zw = aalldata.(categoryname).zw ;  
+
+if exist('corrdata', "var") 
+    clear c ucoshratio coshratio Hrmsi eta_pp contsh etacosh kh
+    c.ucoshratio = corrdata.(categoryname).ucoshratio ;
+    c.coshratio = corrdata.(categoryname).coshratio ;
+    c.u = corrdata.(categoryname).u ;
+    c.t = corrdata.(categoryname).t ;
+    c.Hrmsii = corrdata.(categoryname).Hrmsii ;
+    c.eta_pp = corrdata.(categoryname).eta_pp ;
+    c.contsh = corrdata.(categoryname).contsh ;
+    c.etacosh = corrdata.(categoryname).etacosh ;
+    c.kh = corrdata.(categoryname).kh ;
+end
+
+
+% if exist('corrdata', "var") 
+%     clear c ucoshratio coshratio Hrmsi eta_pp contsh etacosh kh
+%     c.ucoshratio = cell2mat(corrdata.(categoryname).ucoshratio) ;
+%     c.coshratio = cell2mat(corrdata.(categoryname).coshratio) ;
+%     c.Hrmsii = cell2mat(corrdata.(categoryname).Hrmsii) ;
+%     c.contsh = cell2mat(corrdata.(categoryname).contsh) ;
+%     c.kh = cell2mat(corrdata.(categoryname).kh) ;
+%     c.u = corrdata.(categoryname).u ;
+%     c.t = corrdata.(categoryname).t ;
+%     c.eta_pp = corrdata.(categoryname).eta_pp ;
+%     c.etacosh = corrdata.(categoryname).etacosh ;
+% end
+
+% c.ucoshratio = cell2mat(corrdata.(categoryname).ucoshratio) ;
+%     c.coshratio = cell2mat(corrdata.(categoryname).coshratio) ;
+%     c.u = corrdata.(categoryname).u ;
+%     c.t = corrdata.(categoryname).t ;
+%     c.Hrmsii = corrdata.(categoryname).Hrmsii ;
+%     c.eta_pp = corrdata.(categoryname).eta_pp ;
+%     c.contsh = corrdata.(categoryname).contsh ;
+%     c.etacosh = corrdata.(categoryname).etacosh ;
+%     c.kh = corrdata.(categoryname).kh ;
+   % c.ucoshratio = cell2mat(corrdata.(categoryname).ucoshratio) ;
+   %  c.coshratio = cell2mat(corrdata.(categoryname).coshratio) ;
+   %  % c.u = cell2mat(corrdata.(categoryname).u) ;
+   %  % c.t = cell2mat(corrdata.(categoryname).t) ;
+   %  c.Hrmsii = cell2mat(corrdata.(categoryname).Hrmsii) ;
+   %   c.eta_pp = cell2mat(corrdata.(categoryname).eta_pp) ;
+   %  c.contsh = cell2mat(corrdata.(categoryname).contsh) ;
+   %  % c.etacosh = cell2mat(corrdata.(categoryname).etacosh) ;
+   %  c.kh = cell2mat(corrdata.(categoryname).kh) ;
