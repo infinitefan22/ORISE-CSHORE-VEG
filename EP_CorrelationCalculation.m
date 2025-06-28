@@ -17,7 +17,7 @@ set(groot,'defaultAxesTickLabelInterpreter','latex')
 set(groot, 'defaultLegendInterpreter','latex')
 
 currentfolder = pwd ; %MATLABONLINE
-savfolderpath = join([currentfolder, '/ClaraFigures/CorrelationCalculation/20250609/'], '') ; 
+savfolderpath = join([currentfolder, '/ClaraFigures/CorrelationCalculation/20250617/'], '') ; 
 cnt = 1;
 clear fieldnames ; fieldnames = fieldnames(aalldata) ;
 ADVlabel = {'ADV 2, $z=1.404$m', 'ADV 3, $z=1.550$m','ADV 4, $z=1.720$m','ADV 5, $z=1.858$m'} ;
@@ -26,24 +26,47 @@ zu = [1.4040, 1.5500, 1.7200, 1.8580] ; % ADV 2,3,4,5 (order is correct and chec
 ffh = .85 ; %false floor height
 % indvlayoutplot = 0 ; %plotting indv layout graphs. 1 for yes, anything else for no (0)
 savfigs = 0;
- % errbars = 1 ; 
+ errbars = 0 ; 
 Qcosh = 1 ; %do you want to see eta v velocity (0) or eta*cosh v velocity (1)
+
+%% ColorBar
+clrbr = 1 ; %if 1, colorbar will be plotted
+cbvar = 'Tp'; %what variable are you looking at?
+cblab = '$Tp$' ; %input the color bar label you want
+khcolors = jet(300) ; 
+for totalnum = 5:length(fieldnames)
+    categoryname = fieldnames{totalnum} ; % 'HighDensity_h270_hv182_NoWall' ; %
+    set_category_variables
+    Tpval = [aalldata.(categoryname).(cbvar){1:end}] ; %yes you need these lines. it's annoying
+    TpV(totalnum,1) = max(Tpval) ; 
+    TpV(totalnum,2) = min(Tpval) ; 
+    % kh(totalnum,1) = max(Tpval)*max(Hrval) ;
+    % kh(totalnum,2) = min(Tpval)*min(Hrval) ; 
+end ; clear totalnum
+kmapmax = max(TpV(:,1))  ;
+kmapmin = min(TpV(:,2))  ;
+kfactor = (kmapmax)/length(khcolors) ; %-kmapmin % for assigning the color in the color map
+
+
 
 for totalnum = 5:length(fieldnames) %CATEGORIES LOOP
     gcnum = totalnum-4 ; %should be changed with graphcolors to avoid error
     clear ms specADVvalms
     categoryname = fieldnames{totalnum} ; % 'HighDensity_h270_hv182_NoWall' ; %
     set_category_variables
+    Hrmsi = aalldata.(categoryname).Hrmsi ; 
     NumofTrials = length(t) ; 
 %% Correlation calculation
     if Qcosh ==1 ; Qevc = 'etacosh' ; else ; Qevc = 'eta_pp' ; end
     
-    if contains(categoryname, '158') || contains(categoryname, '188')
+    if contains(categoryname, '158') 
         totADV = 2 ; 
+    elseif contains(categoryname, '188')
+        totADV = 3 ; 
     else 
         totADV = 4 ; 
     end
-
+    clear xc ms
     for num = 1:NumofTrials % Coherence ; TRIALS % milinx = ; %idx where y is .01 sec
         for ADVnum = 1:totADV
             clear x y idx
@@ -77,14 +100,15 @@ for totalnum = 5:length(fieldnames) %CATEGORIES LOOP
 %% 
 
     %% Plotting 
-     Coherence_Indv_Plots
+     % Coherence_Indv_Plots
      % Coherence_Plots
      % CrossCorrelation_Plots
+     CrossCorrelation_Comp_Plots
 
 end
 
 % figure(100) ;  legend(graphes, legendentry) %fieldnames(5:end))
-savfigname = "AllCorrelations_Cross_EtavU.png" ;
+savfigname = "CrossCorr_CB_TpComp.png" ;
   %exportgraphics(gcf, fullfile(savfolderpath, savfigname), 'Resolution', 300) ; %close all
 
 
@@ -101,4 +125,4 @@ savfigname = "AllCorrelations_Cross_EtavU.png" ;
 % [coshratioXcorr, lags] = xcorr(c.coshratio,c.ucoshratio)  
 
 % figure(200)
-% stem(xy,xx)
+% stem(x,y) %x and y from cross correlation
