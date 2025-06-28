@@ -1,5 +1,5 @@
 clear alpha Cdexct2 CdKelty d datEf datHrms eta eta_init eta_p eta0a eta0b F2 F2overCd Hrmsi hv 
-clear k KC modeleta modelHrmsp p_init sav stats t u udum waveperiod xi xp xwg
+clear k KC modeleta modelHrmsp p_init sav stats t Tp u udum waveperiod xi xp xwg
   
    alpha = aalldata.(categoryname).alpha ; 
    Cdexact2 = aalldata.(categoryname).Cdexact2 ; 
@@ -27,6 +27,7 @@ clear k KC modeleta modelHrmsp p_init sav stats t u udum waveperiod xi xp xwg
    sav = aalldata.(categoryname).sav ; 
    stats = aalldata.(categoryname).stats ; 
    t = aalldata.(categoryname).t ; 
+   Tp = aalldata.(categoryname).Tp ;
 %    w = aalldata.(categoryname).w ; 
    u = aalldata.(categoryname).u ; 
    % udum = aalldata.(categoryname).udum ; 
