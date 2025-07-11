@@ -70,7 +70,7 @@ for totalnum = 1:length(fieldnames)
         end
     
         for ADVnum = 1:subpnum
-            contsh(ADVnum) = cosh(k{num}*(hh+zu(ADVnum))) / sinh(k{num}*hh) ; 
+            contsh(ADVnum) = (2*pi/Tp{num})*cosh(k{num}*(zu(ADVnum))) / sinh(k{num}*hh) ; 
             etaplot(:, ADVnum) = etastore * contsh(ADVnum) ; 
         end
 
@@ -85,4 +85,4 @@ for totalnum = 1:length(fieldnames)
 
 end   
 
-%save([savfolderpath, 'corrdata_20250529'], 'corrdata')
+%save([savfolderpath, 'corrdata_20250708'], 'corrdata')

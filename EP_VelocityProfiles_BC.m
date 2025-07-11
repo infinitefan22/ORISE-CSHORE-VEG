@@ -60,23 +60,23 @@ trialcolors = hsv(NumofTrials) ;
 clear savfigname ; savfigname = join(['VelocityProfilesMatched_',categoryname, '.png'],'') ; % , 'Trial',string(num)
 end 
 %% Plotting 
-% figure(cnt) ; cnt=cnt+1 ;
-%     for num = 1:NumofTrials
-%         if bmatch.(categoryname).match(num) == 0
-%             scatter(difvrmstrial1.(categoryname)(num,:), zu, 55, trialcolors(num,:), 'x', 'filled', 'MarkerEdgeColor', trialcolors(num,:)) ; hold on 
-%         else
-%         scatter(difvrmstrial1.(categoryname)(num,:), zu, 36, trialcolors(num,:), 'o', 'filled', 'MarkerEdgeColor', "black") ; hold on 
-%         end
-%     end
-%     % scatter(vrmscategories.(categoryname), zu, 100, 'black', 'filled') %RMS
-%     scatter(difvmeancategories2.(categoryname), zu, 100, 'black', 'filled', 'MarkerEdgeColor', "black") %Mean not including x's
-%     legend(trialnumbers)
-%     ylim([1, 3])
-%     xlabel('$u_{mean}$ (m/s)')
-%     ylabel('Elevation (m)')
-%     title(join([titlename, ' $v_{mean}$'],''))
-%     set(gcf, 'Position', [10, 10, 600, 400]);
-%     % saveas(gcf, fullfile(savfolderpath, savfigname))
+figure(cnt) ; cnt=cnt+1 ;
+    for num = 1:NumofTrials
+        if bmatch.(categoryname).match(num) == 0
+            scatter(difvrmstrial1.(categoryname)(num,:), zu, 55, trialcolors(num,:), 'x', 'filled', 'MarkerEdgeColor', trialcolors(num,:)) ; hold on 
+        else
+        scatter(difvrmstrial1.(categoryname)(num,:), zu, 36, trialcolors(num,:), 'o', 'filled', 'MarkerEdgeColor', "black") ; hold on 
+        end
+    end
+    % scatter(vrmscategories.(categoryname), zu, 100, 'black', 'filled') %RMS
+    scatter(difvmeancategories2.(categoryname), zu, 100, 'black', 'filled', 'MarkerEdgeColor', "black") %Mean not including x's
+    legend(trialnumbers)
+    ylim([1, 3])
+    xlabel('$u_{mean}$ (m/s)')
+    ylabel('Elevation (m)')
+    title(join([titlename, ' $v_{mean}$'],''))
+    set(gcf, 'Position', [10, 10, 600, 400]);
+    % saveas(gcf, fullfile(savfolderpath, savfigname))
 
 end
 %%

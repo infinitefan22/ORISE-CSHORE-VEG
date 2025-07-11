@@ -10,14 +10,14 @@ addpath('./ClaraFunctions') ;
 addpath('./data') ; 
 addpath('./mfiles') ; 
      if ~exist('aalldata', "var") ;  load('aalldata_20250428.mat') ; end
-     if ~exist('corrdata', "var") ;  load('corrdata_20250529.mat') ; end
+     if ~exist('corrdata', "var") ;  load('corrdata_20250708.mat') ; end
 
 set(0,'defaultTextInterpreter','latex')
 set(groot,'defaultAxesTickLabelInterpreter','latex') 
 set(groot, 'defaultLegendInterpreter','latex')
 
 currentfolder = pwd ; %MATLABONLINE
-savfolderpath = join([currentfolder, '/ClaraFigures/CorrelationCalculation/20250617/'], '') ; 
+savfolderpath = join([currentfolder, '/ClaraFigures/RootGraphs/'], '') ; 
 cnt = 1;
 clear fieldnames ; fieldnames = fieldnames(aalldata) ;
 ADVlabel = {'ADV 2, $z=1.404$m', 'ADV 3, $z=1.550$m','ADV 4, $z=1.720$m','ADV 5, $z=1.858$m'} ;
@@ -100,10 +100,10 @@ for totalnum = 5:length(fieldnames) %CATEGORIES LOOP
 %% 
 
     %% Plotting 
-     % Coherence_Indv_Plots
-     % Coherence_Plots
+     % % Coherence_Indv_Plots
+     Coherence_Plots
      % CrossCorrelation_Plots
-     CrossCorrelation_Comp_Plots
+    % CrossCorrelation_Comp_Plots
 
 end
 

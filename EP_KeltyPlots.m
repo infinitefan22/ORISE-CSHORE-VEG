@@ -15,7 +15,7 @@ savfolderpath = '/home/elizabeth/Desktop/cshorex-main/osu_mangrove/ClaraFigures/
 %% Setting Constants and Loading Data 
 CNT = 1 ; 
 % load('aalldata_Mar062025DELETE.mat') ;
-load('aalldata_Mar242025.mat') ;
+load('aalldatanewCdcalc_20250711.mat') ; %I haven't run it with the new code yet 07/11/2025
 offset = [3.0 3.9 2.8 3.5 3.8 3.8 ]; 
 
 %% variables (within aalldata)
