@@ -1,7 +1,7 @@
 % data processing section of explore_prediction
 % files created through ClaraSummarize
-% created: 2025/02/24 ; last edit: 2025/02/24
-clear ; clc ; close all
+% created: 2025/02/24 ; last edit: 2025/07/21
+% clear ; clc ; close all
 plottingog = 0 ; plottingyn = 0 ; plottingpost = 0 ; %1 means plots, 0 means no plots
 %og section  % plotting error    %plotting stored data
 cnt = 0; %figure numbers
@@ -46,6 +46,7 @@ aalldata = struct() ;
 skippedtrials = {} ; 
 modeledTplist = {} ; 
 %% data processing
+cz_xptab = zeros(1,length(dnames)) ;
 for j = 1:length(dnames)
       clear p u eta eta_p ubp wbp categoryname N 
 %% % creating the aalldata structure aalldata.(categoryname).
@@ -66,6 +67,8 @@ for j = 1:length(dnames)
   w = [dat.w.w];w = w(:,2:5); %only velocity within mangroves is being saved
   zw = [dat.w.z];zw = zw(:,2:5); % z coor of ADV
   xp = [dat.press.x];%access x field of press field of the data
+  [~,index] = ismember(35.8930,xp) ; 
+  cz_xptab(j) = index ; 
 
   eta = [dat.wg.eta]; % water level elevation (where the water line is)
   xwg = [dat.wg.x];
@@ -202,23 +205,27 @@ for j = 1:length(dnames)
     vegweth = hv ; %mean wetted height of vegetation (d)
     avewatd = hv ; %mean water depth at vegetation (h)
     Hi = 1.4*Hrmsi(1) ; %calculating incident wave height
-    if contains(file, 'HighDensity') || contains(file, 'LowDensity')
-        if strcmp(wavetype, 'Regular')
-            denominator = 9*pi*(sinh(k*avewatd)*(sinh(2*k*avewatd)+2*k*avewatd)) ; 
-            numerator = 4*Atm*N*Hi*k*((sinh(k*vegweth)^3)+3*sinh(k*vegweth)) ;
-            CdKelty = alpha * denominator / numerator ; 
-        elseif strcmp(wavetype, 'Random')
-            denominator = 3*sqrt(pi)*(sinh(k*avewatd)*(sinh(2*k*avewatd)+2*k*avewatd)) ; 
-            numerator = 4*Atm*N*Hrmsi(1)*k*((sinh(k*vegweth)^3)+3*sinh(k*vegweth)) ;
-            CdKelty = alpha * denominator / numerator ;
-        else 
-            disp('Kelty Cd not calculated. Wave type not specified') ; end
+    % if contains(file, 'HighDensity') || contains(file, 'LowDensity')
+    if strcmp(wavetype, 'Regular')
+        denominator = 9*pi*(sinh(k*avewatd)*(sinh(2*k*avewatd)+2*k*avewatd)) ; 
+        numerator = 4*Atm*N*Hi*k*((sinh(k*vegweth)^3)+3*sinh(k*vegweth)) ;
+        CdKelty = alpha * denominator / numerator ; 
+        Hsjohnson = sqrt(2)*std(eta_p(:,1)); 
+    elseif strcmp(wavetype, 'Random')
+        denominator = 3*sqrt(pi)*(sinh(k*avewatd)*(sinh(2*k*avewatd)+2*k*avewatd)) ; 
+        numerator = 4*Atm*N*Hrmsi(1)*k*((sinh(k*vegweth)^3)+3*sinh(k*vegweth)) ;
+        CdKelty = alpha * denominator / numerator ;
+        Hsjohnson = 4*std(eta_p(:,1)) ; 
     else 
+        disp('Kelty Cd not calculated. Wave type not specified') ; end
+    if contains(file, 'Baseline')
         CdKelty = 0 ; 
-        alpha = 0 ; end
+        alpha = 0 ; 
+    end
+        
 
 % Re Calculations
-    Re = fluiddensity*mean(abs(udum))*Daverage/fluidviscosity ; 
+    Re = fluiddensity*mean(abs(udum))*Daverage/fluidviscosity ; % Reynold's number
 % KC Calculations
    waveperiod = range(sav(j2).t+offset(j)) ; %range(xi) 7.45 from Kelty paper
    KC = mean(abs(udum)) * waveperiod / Daverage ; 
@@ -239,6 +246,7 @@ for j = 1:length(dnames)
       aalldata = structure_variables(aalldata, categoryname, 'F2', F2) ;
       % aalldata = structure_variables(aalldata, categoryname, 'F2overCd', F2overCd) ;
       aalldata = structure_variables(aalldata, categoryname, 'Hrmsi', Hrmsi) ; 
+      aalldata = structure_variables(aalldata, categoryname, 'Hsjohnson', Hsjohnson) ;
       aalldata = structure_variables(aalldata, categoryname, 'hv', hv) ;
       aalldata = structure_variables(aalldata, categoryname, 'k', k) ;
       aalldata = structure_variables(aalldata, categoryname, 'KC', KC) ;
@@ -274,4 +282,4 @@ end %CLARA
 
 %%
   % save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_20250418.mat'], 'aalldata') ; 
-    % save(['/MATLAB Drive/ClaraZwolanek/data/', 'aalldatanewCdcalc_20250711'], 'aalldata') ; %MATLAB ONLINE
+    % save(['/MATLAB Drive/ClaraZwolanek/data/', 'aalldatanewCdcalc_20250721_2'], 'aalldata') ; %MATLAB ONLINE

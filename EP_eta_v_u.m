@@ -3,7 +3,7 @@ addpath('./ClaraFunctions') ;
 addpath('./ClaraFunctions/LOESS regression smoothing-2.1.0.0') ;
 addpath('./data') ; 
 addpath('./mfiles') ; 
-     if ~exist('aalldata', "var") ;  load('aalldata_20250428.mat') ; end
+     if ~exist('aalldata', "var") ;  load('aalldatanewCdcalc_20250721_2.mat') ; end
 
 currentfolder = pwd ; %MATLABONLINE
 savfolderpath = join([currentfolder, '/ClaraFigures/EP_eta_v_u/20250522/EtaCosh v U zoom/'], '') ; 
@@ -20,6 +20,8 @@ zu = [1.4040, 1.5500, 1.7200, 1.8580] ; % ADV 2,3,4,5 (order is correct and chec
 ffh = .85 ; %false floor height
 catcolors = hsv(3) ; 
 khcolors = winter(300) ; 
+corrvalues = struct() ; % added 07/31/2025
+
 for totalnum = 1:length(fieldnames)
     categoryname = fieldnames{totalnum} ; % 'HighDensity_h270_hv182_NoWall' ; %
     set_category_variables
@@ -48,9 +50,11 @@ for num = 1:NumofTrials  %
     trialnum = num ; titlename_trial = join([strrep(categoryname, '_', '-'), ' Trial ', string(trialnum)], "") ;
     titlename = join([strrep(categoryname, '_', '-'),' Trial ',string(num)], "") ;
     if contains(categoryname, "Low") 
-        titlenameshort = 'Low Density' ; 
+        titlenameshort = 'Low Density' ; %CLARA EDITED
     elseif contains(categoryname, "High")
         titlenameshort = 'High Density' ; 
+    elseif contains(categoryname, "Base")
+        titlenameshort = 'Baseline' ;
     end
 
     hh = hv{num} ; % still water height at vegetation (in relation to false floor)
@@ -79,7 +83,7 @@ for num = 1:NumofTrials  %
         subpnum = 4 ; 
     end
 
-    for ADVnum = 1:subpnum
+    for ADVnum = 1:4
         contsh = cosh(k{num}*(hh+zu(ADVnum)) / sinh(k{num}*hh)) ; 
         % contsh = cosh((k{num}*(zu(ADVnum)-ffh)) / sinh(k{num}*hh)) ;
         etaplot = eta_pp(:,3) .* contsh ; 
@@ -87,7 +91,8 @@ for num = 1:NumofTrials  %
         corrvalues = structure_variables(corrvalues, categoryname, 'eta_pCosh',etaplot) ; %storing etaplot
 
         figure(cnt)
-            sgtitle(join([titlenameshort, ', $kh$=', num2str(kh), ' $H_{rmsi}/hv$=' , num2str(hhv)],''))
+            sgtitle(titlename)
+            % sgtitle(join([titlenameshort, ', $kh$=', num2str(kh), ' $H_{rmsi}/hv$=' , num2str(hhv)],''))
             subplot(4,1, subplotnum2(ADVnum))
             plot(tt, uu(:, ADVnum)) ; hold on
             plot(tt, etaplot) ; hold on
@@ -99,7 +104,7 @@ for num = 1:NumofTrials  %
 
     end ; cnt = cnt+1 ; 
 
-        set(gcf, 'Position', [100, 100, 1800, 1200]);
+        % set(gcf, 'Position', [100, 100, 1800, 1200]);
         savfigname = join(['EtaU ',titlename, 'zoom.png'],'') ;
         % pause(3)
         if savefig == 1 ; exportgraphics(gcf, fullfile(savfolderpath, savfigname), 'Resolution', 300); end 
