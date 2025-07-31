@@ -1,4 +1,4 @@
-clear alpha Cdexct2 CdKelty d datEf datHrms eta eta_init eta_p eta0a eta0b F2 F2overCd Hrmsi hv 
+clear alpha Cdexct2 CdKelty d datEf datHrms eta eta_init eta_p eta0a eta0b F2 F2overCd Hrmsi Hsjohnson hv 
 clear k KC modeleta modelHrmsp p_init sav stats t Tp u udum waveperiod xi xp xwg
   
    alpha = aalldata.(categoryname).alpha ; 
@@ -16,14 +16,15 @@ clear k KC modeleta modelHrmsp p_init sav stats t Tp u udum waveperiod xi xp xwg
    F2 = aalldata.(categoryname).F2 ; 
    % F2overCd = aalldata.(categoryname).F2overCd ; 
    Hrmsi = aalldata.(categoryname).Hrmsi ; 
-   hv = aalldata.(categoryname).hv ; 
+   hv = aalldata.(categoryname).hv ;
+   Hsjohnson = aalldata.(categoryname).Hsjohnson ;
    k = aalldata.(categoryname).k ; 
    KC = aalldata.(categoryname).KC ; 
    modeleta = aalldata.(categoryname).modeleta ;
    modelHrms = aalldata.(categoryname).modelHrms ;
    p = aalldata.(categoryname).p ; 
    p_init = aalldata.(categoryname).p_init ; 
-%    Re = aalldata.(categoryname).Re ; 
+   Re = aalldata.(categoryname).Re ; 
    sav = aalldata.(categoryname).sav ; 
    stats = aalldata.(categoryname).stats ; 
    t = aalldata.(categoryname).t ; 
