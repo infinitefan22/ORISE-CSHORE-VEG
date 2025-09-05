@@ -6,12 +6,12 @@ addpath('./mfiles') ;
      if ~exist('aalldata', "var") ;  load('aalldatanewCdcalc_20250721_2.mat') ; end
 
 currentfolder = pwd ; %MATLABONLINE
-savfolderpath = join([currentfolder, '/ClaraFigures/EP_eta_v_u/20250522/EtaCosh v U zoom/'], '') ; 
+savfolderpath = join([currentfolder, '/ClaraFigures/EP_eta_v_u/20250821/'], '') ; 
 
 set(0,'defaultTextInterpreter','latex')
 set(groot,'defaultAxesTickLabelInterpreter','latex') 
 set(groot, 'defaultLegendInterpreter','latex')
-savefig = 0 ; 
+savefig = 1 ; 
 %% Constants
 cnt = 1; 
 clear fieldnames ; fieldnames = fieldnames(aalldata) ;
@@ -73,6 +73,13 @@ for num = 1:NumofTrials  %
     corrvalues = structure_variables(corrvalues, categoryname, 'eta_pp',etastore) ; %rn eta_pp is for 4 adv, we only need the 3, at the location of the ADV stack
     corrvalues = structure_variables(corrvalues, categoryname, 'kh',kh) ; 
     corrvalues = structure_variables(corrvalues, categoryname, 'hhv',hhv) ; 
+
+    uu0 = smoothNoise(uu, std(uu)/3, 10) ; %std(uu)/4
+    uu0 = transpose(uu0) ; 
+    tt0 = tt(1:end-10) ; %make sure you subtract the time in smoothNoise from tt in this line
+    uu_new = spline(tt0, uu0,  1:.01:tt(end-10)) ;
+    uu_n_xp = 1:.01:tt(end-10) ; %for plot
+
 %% Plotting
     subplotnum2 = [4,3,2,1] ; 
     if contains(categoryname, 'h158') 
@@ -95,17 +102,18 @@ for num = 1:NumofTrials  %
             % sgtitle(join([titlenameshort, ', $kh$=', num2str(kh), ' $H_{rmsi}/hv$=' , num2str(hhv)],''))
             subplot(4,1, subplotnum2(ADVnum))
             plot(tt, uu(:, ADVnum)) ; hold on
-            plot(tt, etaplot) ; hold on
-            xlim([5, 35])
+            % plot(tt, etaplot) ; hold on
+            plot(uu_n_xp, uu_new(ADVnum,:), 'magenta') ; hold on
+            % xlim([5, 35])
             ylim([-2,2])
             if ADVnum ==1 ; xlabel("time [s]") ; end
             title(join(["ADV ", string(ADVnum), ', z=', zu(ADVnum), 'm'], ''))
-            legend({'$u$ [m/s]', '$\eta*cosh$'}) % u = velocity, eta = water level elevation
+            legend({'$u$ [m/s]', 'smoothed $u$'}) % u = velocity, eta = water level elevation, , '$\eta*cosh$'
 
     end ; cnt = cnt+1 ; 
 
         % set(gcf, 'Position', [100, 100, 1800, 1200]);
-        savfigname = join(['EtaU ',titlename, 'zoom.png'],'') ;
+        savfigname = join(['EtaUSmoothed ',titlename, '.png'],'') ;
         % pause(3)
         if savefig == 1 ; exportgraphics(gcf, fullfile(savfolderpath, savfigname), 'Resolution', 300); end 
         %if savefig == 1 ; saveas(gcf, fullfile(savfolderpath, savfigname)) ; end %close all

@@ -151,6 +151,27 @@ for j = 1:length(dnames)
       d = -(abs(F2).*abs(udum)); %total time averaged force and dissipation
       dissveg2 = -mean(abs(F2).*abs(udum));
       Lwavelength = 2*pi / k ; 
+% smoothed start
+    uu = u ; % num is supposed to be trials
+    tt = t ; 
+    smr = 10 ; 
+    uu0 = smoothNoise(uu, std(uu)/3, smr) ; %std(uu)/4
+    uu0 = transpose(uu0) ; 
+    tt0 = tt(1:end-smr) ; %make sure you subtract the time in smoothNoise from tt in this line
+    uu_new = spline(tt0, uu0,  1:.01:tt(end-smr)) ; %same comment as above
+    uu_new = transpose(uu_new) ; 
+    uu_n_xp = 1:.01:tt(end-smr) ; %for plot
+    dissbsmoothed = mean(-taub(1:end-100-smr).*uu_new);
+    F2overCdsmoothed = Atm*N*1000/2*(hv+eta_p(1:end-100-smr,3)).*uu_new.*abs(uu_new);% uses p(3) for eta
+    dissvegoverCd2smoothed = mean(-F2overCdsmoothed.*uu_new);
+    Cdexact2smoothed =((9810*nn*c/8)*(Hrmsi(end)^2-Hrmsi(1)^2) - dissbsmoothed*Length)/(dissvegoverCd2smoothed*Length); 
+    F2smoothed = Atm*N*1000*Cdexact2smoothed/2*(hv+eta_p(1:end-100-smr,3)).*uu_new.*abs(uu_new); %fluid force on vegetation
+    dsmoothed = -(abs(F2smoothed).*abs(uu_new)); %total time averaged force and dissipation
+    dissveg2smoothed = -mean(abs(F2smoothed).*abs(uu_new));
+
+    Resmoothed = fluiddensity*mean(abs(uu_new))*Daverage/fluidviscosity ; 
+% smoothed end
+       
       
       modelEf(1) = (9810*nn*c/8)*Hrmsi(1)^2;
       modelHrms(1) = sqrt(8*modelEf(1)/(9810*nn*c)); 
@@ -233,6 +254,7 @@ for j = 1:length(dnames)
 % saving the data into a structure array
       aalldata = structure_variables(aalldata, categoryname, 'alpha', alpha) ;
       aalldata = structure_variables(aalldata, categoryname, 'Cdexact2', Cdexact2) ;
+      aalldata = structure_variables(aalldata, categoryname, 'Cdsmoothed', Cdexact2smoothed) ;
       aalldata = structure_variables(aalldata, categoryname, 'd', d) ;
       aalldata = structure_variables(aalldata, categoryname, 'CdKelty', CdKelty) ;
       aalldata = structure_variables(aalldata, categoryname, 'datEf', datEf) ;
@@ -243,7 +265,9 @@ for j = 1:length(dnames)
       aalldata = structure_variables(aalldata, categoryname, 'eta0b', eta0b) ;
       aalldata = structure_variables(aalldata, categoryname, 'eta_init', eta_init) ;
       aalldata = structure_variables(aalldata, categoryname, 'eta_p', eta_p) ;
+      aalldata = structure_variables(aalldata, categoryname, 'eta_psmoothed', eta_p(1:end-smr,3)) ;
       aalldata = structure_variables(aalldata, categoryname, 'F2', F2) ;
+      aalldata = structure_variables(aalldata, categoryname, 'F2smoothed', F2smoothed) ;
       % aalldata = structure_variables(aalldata, categoryname, 'F2overCd', F2overCd) ;
       aalldata = structure_variables(aalldata, categoryname, 'Hrmsi', Hrmsi) ; 
       aalldata = structure_variables(aalldata, categoryname, 'Hsjohnson', Hsjohnson) ;
@@ -256,11 +280,16 @@ for j = 1:length(dnames)
       aalldata = structure_variables(aalldata, categoryname, 'p', p) ;
       aalldata = structure_variables(aalldata, categoryname, 'p_init', p_init) ; 
       aalldata = structure_variables(aalldata, categoryname, 'Re', Re) ;
+      aalldata = structure_variables(aalldata, categoryname, 'Resmoothed', Resmoothed) ;
       aalldata = structure_variables(aalldata, categoryname, 'sav', sav) ;
       aalldata = structure_variables(aalldata, categoryname, 'stats', stats) ;
       aalldata = structure_variables(aalldata, categoryname, 't', t) ;
+      aalldata = structure_variables(aalldata, categoryname, 'ttsmoothed', tt0) ;
       aalldata = structure_variables(aalldata, categoryname, 'Tp', Tp) ; %period from excel table
       aalldata = structure_variables(aalldata, categoryname, 'u', u) ; % ADV horizontal velocities (2:5), parallel to flow
+      aalldata = structure_variables(aalldata, categoryname, 'uu0', uu0) ;
+      aalldata = structure_variables(aalldata, categoryname, 'uu_new', uu_new) ;
+      aalldata = structure_variables(aalldata, categoryname, 'uu_n_xp', uu_n_xp) ;
       % aalldata = structure_variables(aalldata, categoryname, 'udum', udum) ; % ADV 3/4 only
       % aalldata = structure_variables(aalldata, categoryname, 'w', w) ; %ADV vertical velocities
       aalldata = structure_variables(aalldata, categoryname, 'wavetype', wavetype) ;
@@ -282,4 +311,4 @@ end %CLARA
 
 %%
   % save(['/home/elizabeth/Desktop/cshorex-main/osu_mangrove/data/', 'aalldata_20250418.mat'], 'aalldata') ; 
-    % save(['/MATLAB Drive/ClaraZwolanek/data/', 'aalldatanewCdcalc_20250721_2'], 'aalldata') ; %MATLAB ONLINE
+    % save(['/MATLAB Drive/ClaraZwolanek/data/', 'aalldatasmoothed_20250822'], 'aalldata') ; %MATLAB ONLINE

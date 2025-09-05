@@ -56,6 +56,22 @@ for num = 1:NumofTrials
     liztable.Tp_J(end+1,1) = Jtp ; 
     liztable.Tp_K(end+1,1) = Ktp ; 
 
+    uu = u{num} ; 
+    tt = t{num} ; 
+    uu0 = smoothNoise(uu, std(uu)/3, 10) ; %std(uu)/4
+    uu0 = transpose(uu0) ; 
+    tt0 = tt(1:end-10) ; %make sure you subtract the time in smoothNoise from tt in this line
+    uu_new = spline(tt0, uu0,  1:.01:tt(end-10)) ;
+    uu_n_xp = 1:.01:tt(end-10) ; %for plot
+    eta_pp = eta_p{num} ; 
+    eta_pp = eta_pp(:,3) ; 
+%%%%%%% HERE
+    F2overCd = Atm*N*1000/2*(hv+eta_p(:,3)).*udum.*abs(udum);% uses p(3) for eta
+      dissvegoverCd2 = mean(-F2overCd.*udum);
+      Cdexact2smoothed =((9810*nn*c/8)*(Hrmsi(end)^2-Hrmsi(1)^2) - dissb*Length)/(dissvegoverCd2*Length); 
+
+    
+
 %% plotting in for loop
    figure(1)
    graph(totalnum-(loopmin-1)) = scatter(CdvalueK, Cdexact2{num}, 36, graphcolors(totalnum-(loopmin-1),:), "filled") ; hold on
@@ -78,6 +94,7 @@ for num = 1:NumofTrials
    xlabel("$Re$")
    ylabel("$C_D$")
    title("$C_D$ vs. $Re$ Matched Trials")
+
 end
 end
 figure(1); legend(graph, legendnames(loopmin:end))
